@@ -1,0 +1,262 @@
+<!-- File: templates/supplier_form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <style>
+        /* --- Mobile-First Base (matching purchase.html) --- */
+        body {
+          height: 100vh;
+          background-color: #f8f9fa;
+          padding-bottom: 70px; /* room for footer if needed */
+        }
+        .container-fluid,
+        .screen-body {
+          height: 100%;
+          padding: 1rem;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        /* Thumb-friendly inputs */
+        .form-control,
+        .form-select {
+          min-height: 48px;
+        }
+
+        /* Item Card (supplier items) — mirror purchase .item-card */
+        .item-card {
+          border: 1px solid #ced4da;
+          border-radius: 8px;
+          padding: 10px;
+          margin-bottom: 10px;
+          background-color: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          transition: transform 0.08s ease, box-shadow 0.08s ease;
+          position: relative;
+          cursor: pointer;
+        }
+        .item-card.selected {
+          border-color: #0d6efd;
+          box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.3);
+          transform: translateY(-2px);
+        }
+        .item-details {
+          flex-grow: 1;
+          margin-right: 10px;
+          min-width: 0;
+        }
+        .item-name {
+          font-weight: 600;
+          font-size: 1rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .item-meta {
+          font-size: 0.85rem;
+          color: #495057;
+        }
+        .item-actions {
+          display: flex;
+          align-items: center;
+        }
+        .item-actions .btn {
+          padding: 6px 8px;
+          font-size: 0.9rem;
+          margin-left: 5px;
+        }
+        .remove-line {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          width: 28px;
+          height: 28px;
+          padding: 0;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 6px;
+          font-size: 14px;
+        }
+
+        /* Popup — identical to purchase modal */
+        .modal-overlay {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: 2000;
+          justify-content: center;
+          align-items: flex-end; /* slide up from bottom */
+        }
+        .modal-content {
+          background-color: #fff;
+          padding: 15px;
+          width: 100%;
+          max-height: 90vh;
+          border-top-left-radius: 12px;
+          border-top-right-radius: 12px;
+          transform: translateY(0);
+          animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+          from {
+            transform: translateY(100%);
+          }
+          to {
+            transform: translateY(0);
+          }
+        }
+    </style>
+</head>
+<body>
+<!-- Top Bar (match purchase layout) -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button
+            type="button"
+            onclick="navigate()"
+            class="btn btn-outline-secondary btn-sm btn-icon me-2"
+            aria-label="Back to Suppliers"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <div class="ConsoleLog"></div>
+    <h5 id="supFormTitle" class="mb-0 flex-grow-1"></h5>
+    <button
+            type="button"
+            onclick="navigate()"
+            class="btn btn-outline-secondary btn-sm btn-icon"
+            aria-label="Cancel"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+<main class="screen-body px-2">
+    <div class="card border-0 shadow-none">
+        <div class="card-body px-1">
+            <!-- Warnings -->
+            <div id="no-products-warning" class="alert alert-warning d-none">
+                No products available. Please add a product first.
+            </div>
+            <div id="no-uoms-warning" class="alert alert-warning d-none">
+                No UOMs available. Please add a UOM first.
+            </div>
+
+            <!-- Form -->
+            <form id="supplier-form" novalidate>
+                <!-- Supplier Info -->
+                <div class="mb-3">
+                    <label for="name" class="form-label">
+                        name <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" id="name" class="form-control" required />
+                    <div class="invalid-feedback">name is required.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="address" class="form-label">address</label>
+                    <input type="text" id="address" class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">phone</label>
+                    <input
+                            type="tel"
+                            id="phone"
+                            class="form-control"
+                            pattern="^[0-9+\-()\s]+$"
+                    />
+                    <div class="invalid-feedback">Enter a valid phone number.</div>
+                </div>
+
+                <hr />
+
+                <!-- Offered Items -->
+                <h6 class="mt-4 mb-3">Offered Items</h6>
+
+                <!-- Items container (use same structure as purchase: item-card) -->
+                <div id="staticItemsGrid" class="mb-3">
+                    <div id="staticItemsGridInner" class="d-flex flex-wrap gap-2">
+                        <!-- Cards created by JS should use .item-card with .item-details, .item-name, .item-meta -->
+                        <!-- Example structure (for reference-only, JS will populate):
+                        <div class="item-card">
+                          <div class="item-details">
+                            <div class="item-name">Product name</div>
+                            <div class="item-meta">UOM: EA • price: 12.00</div>
+                          </div>
+                          <div class="item-actions">
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-line">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </div>
+                        -->
+                    </div>
+                </div>
+
+                <button type="button" id="addItemRow" class="btn btn-secondary btn-sm mb-3">
+                    Add Item
+                </button>
+
+                <!-- Save -->
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" id="saveSupForm" class="btn btn-primary" disabled>
+                        Save Supplier
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div style="height: 50px;"></div>
+</main>
+
+<!-- Popup: Add / Edit Supplier Item (match purchase modal overlay/content classes) -->
+<div id="addItemPopup" class="modal-overlay">
+    <div class="modal-content" style="max-width: 520px; margin: 0 auto;">
+        <h6 id="popupTitle" class="mb-3 text-center">Add Offered Item</h6>
+
+        <div class="mb-2">
+            <label class="form-label">Product</label>
+            <select id="popupProductSelect" class="form-select"></select>
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label">UOM</label>
+            <select id="popupUomSelect" class="form-select"></select>
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label">price / UOM</label>
+            <input
+                    type="number"
+                    id="popupPrice"
+                    class="form-control"
+                    step="0.01"
+                    min="0"
+                    value="0"
+            />
+        </div>
+
+        <div class="mb-2 text-center">
+            <small class="text-muted">Base price: <span id="popupBasePrice">0.00</span></small>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <button id="popupCancel" class="btn btn-secondary btn-sm">Cancel</button>
+            <button id="popupSave" class="btn btn-success btn-sm">Save</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

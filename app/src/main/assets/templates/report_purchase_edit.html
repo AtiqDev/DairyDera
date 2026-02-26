@@ -1,0 +1,138 @@
+<!-- File: templates/report_purchase_edit.html -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button id="backPurchaseForm" class="btn btn-outline-secondary btn-icon me-3"
+            onclick="navigate()">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <div class="ConsoleLog"></div>
+    <h5 class="screen-title mb-0 flex-grow-1">Edit Purchase</h5>
+</div>
+
+<main class="screen-body">
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Supplier</label>
+                <div class="form-control-plaintext"><strong id="rpeSup">—</strong></div>
+            </div>
+
+            <div class="mb-3">
+                <label for="item" class="form-label">Item</label>
+                <input id="item" type="text" class="form-control"/>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label for="rate" class="form-label">rate</label>
+                    <input id="rate" type="number" step="0.01" class="form-control"/>
+                </div>
+                <div class="col-md-4">
+                    <label for="qty" class="form-label">quantity</label>
+                    <input id="qty" type="number" step="0.01" class="form-control"/>
+                </div>
+                <div class="col-md-4">
+                    <label for="amount" class="form-label">amount</label>
+                    <input id="amount" type="number" step="0.01" class="form-control"/>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" class="form-select"></select>
+            </div>
+
+            <div class="mb-3">
+                <label for="notes" class="form-label">notes</label>
+                <textarea id="notes" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button id="saveReportPurchase" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    (function() {
+      const ns = {};
+
+      // --- Local functions ---
+      ns.updateAmount = function() {
+        const r = parseFloat(ns.rateEl.value) || 0;
+        const q = parseFloat(ns.qtyEl.value) || 0;
+        ns.amtEl.value = (r * q).toFixed(2);
+      };
+
+      ns.updateRate = function() {
+        const q = parseFloat(ns.qtyEl.value) || 0;
+        const a = parseFloat(ns.amtEl.value) || 0;
+        ns.rateEl.value = q > 0 ? (a / q).toFixed(2) : 0;
+      };
+
+      // --- Entry Point ---
+      ns.init = async function(params) {
+        const suppliers_raw = await nativeApi.call('getSuppliers');
+        const suppliers = JSON.parse(suppliers_raw);
+        const purchases_raw = await nativeApi.call('getPurchases');
+        const purchases = JSON.parse(purchases_raw);
+        const purchase = purchases.find(p => p.id == params.id) || {};
+        const sup = suppliers.find(s => s.id === purchase.supplierId) || {};
+        const statuses_raw = await nativeApi.call('getPurchaseStatus');
+        const statuses = JSON.parse(statuses_raw);
+
+        document.getElementById('rpeSup').textContent = sup.name || '—';
+        document.getElementById('item').value = purchase.Item || '';
+        document.getElementById('rate').value = purchase.rate ?? sup.rate ?? 0;
+        document.getElementById('qty').value = purchase.quantity ?? sup.quantity ?? 0;
+        document.getElementById('amount').value = purchase.amount ?? (purchase.rate * purchase.quantity) ?? 0;
+        document.getElementById('notes').value = purchase.notes || '';
+
+        const sel = document.getElementById('status');
+        sel.innerHTML = '';
+        statuses.forEach(s => {
+          const o = document.createElement('option');
+          o.value = s.id;
+          o.textContent = s.name;
+          if (s.id === purchase.statusId) o.selected = true;
+          sel.appendChild(o);
+        });
+
+        ns.rateEl = document.getElementById('rate');
+        ns.qtyEl = document.getElementById('qty');
+        ns.amtEl = document.getElementById('amount');
+
+        ns.rateEl.addEventListener('input', ns.updateAmount);
+        ns.qtyEl.addEventListener('input', ns.updateAmount);
+        ns.amtEl.addEventListener('input', ns.updateRate);
+        ns.updateAmount();
+
+        document.getElementById('backReportPurchase').onclick = () => {
+          location.hash = `#purchases?date=${encodeURIComponent(params.date)}`;
+        };
+
+        document.getElementById('saveReportPurchase').onclick = async () => {
+          const updated = {
+            id: purchase.id,
+            supplierId: purchase.supplierId,
+            purchaseDate: purchase.purchaseDate || params.date,
+            Item: document.getElementById('item').value.trim(),
+            quantity: parseFloat(ns.qtyEl.value),
+            rate: parseFloat(ns.rateEl.value),
+            amount: parseFloat(ns.amtEl.value),
+            statusId: parseInt(sel.value, 10),
+            notes: document.getElementById('notes').value.trim(),
+            createDate: purchase.createDate || new Date().toISOString(),
+            updateDate: new Date().toISOString()
+          };
+
+          nativeApi.post('savePurchase', updated);
+          navigate();
+        };
+      };
+
+      // --- Expose entry globally ---
+      window.init_report_purchase_edit = ns.init;
+
+    })();
+</script>

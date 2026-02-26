@@ -1,0 +1,15 @@
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Allow temporary photo storage in cache directory -->
+    <cache-path
+        name="db_file_paths"
+        path="DairyDB" />
+
+    <external-files-path
+        name="exported_dbs"
+        path="." />
+
+    <!-- Allow access to internal app files (if used) -->
+    <files-path
+        name="internal_files"
+        path="." />
+</paths>

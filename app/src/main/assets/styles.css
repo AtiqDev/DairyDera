@@ -1,0 +1,277 @@
+:root {
+  --header-height: 40px;  /* whatever your header height is */
+  --topbar-height: 40px;  /* height of the top bar */
+  --header-height: 41px;
+}
+
+/* Reset & base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Calibri', sans-serif;
+  background: #f0f4f8;
+  color: #333;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* stop whole-page scroll */
+}
+
+header {
+  background: #6200EE;
+  color: #fff;
+  text-align: center;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+#progress { height:4px; background:#6200EE; width:0%; transition:width .2s; }
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-top: var(--header-height); /* pushes content below fixed header */
+}
+
+.screen-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 40px); /* subtract header height */
+  overflow: hidden; /* contain scrolling inside */
+}
+
+.screen-topbar {
+  position: sticky;
+  top: var(--header-height, 51px); /* match your fixed header’s height */
+  height: 40px;
+  background: #e0e0e0;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 .5rem;
+  z-index: 1000;
+}
+
+.screen-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+
+  /*padding-top: var(--topbar-height);*/
+  /*padding-bottom: calc(var(--header-height) + 20px); *//* ensure full visibility */
+  box-sizing: border-box;
+}
+
+.screen-body.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.back-button, .icon-button {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:2.5rem; height:2.5rem;
+  border-radius:50%; border:2px solid #6200EE;
+  background:#fff; color:#6200EE; font-size:1.25rem;
+  cursor:pointer;
+}
+.screen-title { flex:1; text-align:center; font-weight:bold; }
+.screen-actions { display:flex; align-items:center; gap:.5rem; }
+
+/* 3px curved buttons everywhere */
+button, input, select, textarea {
+  font-size:1rem; margin:.5rem 0; padding:.5rem; width:100%;
+  border-radius:3px;
+}
+
+/* Dashboard buttons */
+.btn-icon { margin-right:.5rem; }
+
+/* Customers list */
+.mode-toggle { display:flex; gap:.5rem; }
+.scrollable { max-height:calc(100vh-200px); overflow-y:auto; }
+.list-item {
+  padding:.5rem; border-bottom:1px solid #ccc; cursor:pointer;
+}
+.list-item:nth-child(even){ background:#f9f9f9; }
+.list-item:nth-child(odd) { background:#fff; }
+.list-item:hover          { background:#ddd; }
+
+/* Sales report table stripes */
+table { width:100%; border-collapse:collapse; margin-top:1rem; }
+tr:nth-child(even){ background:#f9f9f9; }
+tr:nth-child(odd) { background:#fff; }
+th, td { border:1px solid #ccc; padding:.5rem; text-align:left; }
+th      { background:#eee; }
+
+/* Forms & controls layout helper */
+label { margin-top:.5rem; display:block; }
+.row   { display:flex; gap:.5rem; }
+.row>*{ flex:1; }
+/* … your existing rules … */
+
+/* Add at bottom: */
+.mode-toggle.vertical {
+  flex-direction: column !important;
+}
+
+    .grid-section {
+      margin-bottom: 2rem;
+    }
+
+    .grid-section h4 {
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 15px;
+      padding: 20px 0;
+    }
+
+    .app-icon {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      width: 80px;
+      height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: center;
+    }
+
+    .app-icon i {
+      font-size: 2.2em;
+      color: #198754;
+    }
+
+    .app-icon span {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .app-icon:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    table {
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .low-stock {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .sticky-query {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 70px;
+      height: 70px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1000;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: center;
+    }
+
+    .sticky-query i {
+      font-size: 1.8em;
+      color: #198754;
+    }
+
+    .sticky-query span {
+      margin-top: 4px;
+      font-size: 0.7rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .sticky-query:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    }
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;      /* adjust icon size */
+  color: #495057;          /* default color */
+  cursor: pointer;
+}
+
+.back-button:hover {
+  color: #212529;          /* darker on hover */
+}
+
+/* Ensure the log panel itself is black with white text */
+.in-page-log-panel {
+  height: 100px !important;
+  overflow-y: auto !important;
+  background-color: #000 !important;
+  color: #fff !important;
+}
+.in-page-log-panel .logs-container {
+  margin-top: 32px;   /* leave space for the clear button */
+  height: calc(100% - 32px);
+  overflow-y: auto;
+}
+/* Style the clear button so its outline and icon are visible */
+.in-page-log-panel .btn-outline-light {
+  color: #fff;
+  border-color: #fff;
+}
+
+/* Make sure each log entry is white */
+.in-page-log-panel .log-entry,
+.in-page-log-panel .log-log,
+.in-page-log-panel .log-info,
+.in-page-log-panel .log-warn,
+.in-page-log-panel .log-error {
+  color: #fff !important;
+}
+
+/* Optional: tweak scroll bar for dark theme (WebKit) */
+.in-page-log-panel::-webkit-scrollbar {
+  width: 8px;
+}
+.in-page-log-panel::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 4px;
+}
+.in-page-log-panel::-webkit-scrollbar-track {
+  background-color: #222;

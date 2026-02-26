@@ -1,0 +1,46 @@
+<!-- File: templates/mix_milk.html -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button class="btn btn-outline-secondary btn-icon me-3" onclick="navigate()"
+            style="width: 32px; height: 32px; padding: 0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <div class="ConsoleLog"></div>
+    <h5 class="screen-title mb-0 flex-grow-1">Mix Milk</h5>
+    <button class="btn btn-outline-secondary btn-icon" onclick="navigate()"
+            style="width: 32px; height: 32px; padding: 0;">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+<main class="screen-body">
+    <div class="card mx-auto" style="max-width: 700px;">
+        <div class="card-header fw-bold">Available Raw Milk Stock</div>
+
+        <div class="card-body">
+
+            <!-- NEW: Warning message -->
+            <div id="noQtyMsg" class="text-danger mb-3 text-center" style="display: none; font-size: 0.95rem;">
+                No quantity available to Mix - First Produce or Purchase the Milk
+            </div>
+
+            <table class="table table-sm table-bordered align-middle mb-3" id="tblRawStock">
+                <thead class="table-light">
+                <tr>
+                    <th class="text-center" style="width: 40px;">#</th>
+                    <th>Product</th>
+                    <th class="text-end" style="width: 120px;">Available</th>
+                    <th class="text-center" style="width: 80px;">Unit</th>
+                    <th class="text-end" style="width: 120px;">Mix Qty</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <div class="d-flex justify-content-end mt-4">
+                <button id="btnMixSave" class="btn btn-success">
+                    <i class="fas fa-mortar-pestle me-1"></i> Mix & Save
+                </button>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,203 @@
+<!-- File: invoice.html -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button id="backInvoice" class="btn btn-outline-secondary btn-icon me-3" onclick="navigate()" style="width: 32px; height: 32px; padding: 0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <div class="ConsoleLog"></div>
+    <h5 id="invoiceTitle" class="screen-title mb-0 flex-grow-1">Invoice</h5>
+    <button id="closeInvoice" class="btn btn-outline-secondary btn-icon" style="width: 32px; height: 32px; padding: 0;" onclick="navigate()">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+<main class="screen-body">
+    <div class="card border-0 shadow-none">
+        <div class="card-body p-0">
+
+            <section class="invoice-header p-3">
+                <div class="row g-3 align-items-center mb-2">
+                    <div class="col-6">
+                        <label class="form-label small mb-1">Customer</label>
+                        <div id="customerName" class="fw-bold">Loading…</div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <label class="form-label small mb-1">Invoice Date</label>
+                        <div id="invoiceDate" class="fw-bold">—</div>
+                    </div>
+                </div>
+
+                <div class="row g-3 align-items-center mb-2">
+                    <div class="col-6">
+                        <label class="form-label small mb-1">Status</label>
+                        <div id="invoiceStatus">—</div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <label class="form-label small mb-1">Total</label>
+                        <div id="invoiceTotal" class="fw-bold fs-5">0.00</div>
+                    </div>
+                </div>
+                <!-- Add this row inside .invoice-header -->
+                <div class="row g-3 align-items-center mb-2">
+                    <div class="col-6">
+                        <label class="form-label small mb-1">Balance</label>
+                        <div id="invoiceBalance" class="fw-bold fs-5 text-danger">0.00</div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <label class="form-label small mb-1">Paid</label>
+                        <div id="invoicePaid" class="fw-bold text-success">0.00</div>
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label class="form-label small mb-1">notes</label>
+                    <div id="invoiceNotes" class="text-muted">—</div>
+                </div>
+
+                <hr/>
+            </section>
+
+            <section class="invoice-lines p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Details</h6>
+                </div>
+
+                <div class="table-responsive mb-2">
+                    <table id="invoiceTable" class="table table-bordered" style="width:100%;border-collapse:collapse;">
+                        <colgroup>
+                            <col style="width:20%;">
+                            <col style="width:20%;">
+                            <col style="width:10%;">
+                            <col style="width:20%;">
+                            <col style="width:30%;">
+                        </colgroup>
+                        <thead class="table-light">
+                        <tr>
+                            <th style="border:1px solid #dee2e6;padding:0.25rem;">From</th>
+                            <th style="border:1px solid #dee2e6;padding:0.25rem;">To</th>
+                            <th style="border:1px solid #dee2e6;padding:0.25rem;">Days</th>
+                            <th style="border:1px solid #dee2e6;padding:0.25rem;text-align:right;">Qty</th>
+                            <th style="border:1px solid #dee2e6;padding:0.25rem;text-align:right;">amount</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- injected -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PAYMENT BUTTON + CLOSE -->
+                <div class="d-flex justify-content-end gap-2 mb-3">
+                    <button id="btnReceivePayment" class="btn btn-success">
+                        <i class="fas fa-money-bill-wave me-1"></i> Receive Payment
+                    </button>
+                    <button id="btnClose" class="btn btn-secondary">Close</button>
+                </div>
+            </section>
+
+        </div>
+    </div>
+</main>
+
+<style>
+    .invoice-header .form-label { color: #6c757d; }
+    .invoice-lines table td, .invoice-lines table th { vertical-align: middle; }
+</style>
+
+<script>
+    ;(function(){
+      'use strict';
+
+      function fmtMoney(v) {
+        try { return (Math.round((v||0)*100)/100).toLocaleString(); }
+        catch (e) { return v; }
+      }
+
+      const InvoiceView = {
+        customerId: 0,
+
+        renderHeader(h) {
+            document.getElementById('customerName').textContent = h.CustomerName || '—';
+            document.getElementById('invoiceDate').textContent = (h.InvoiceDate || '').slice(0,10) || '—';
+            document.getElementById('invoiceStatus').textContent = h.Status || '—';
+            document.getElementById('invoiceTotal').textContent = fmtMoney(h.Total || 0.0);
+            document.getElementById('invoicePaid').textContent = fmtMoney(h.Paid || 0.0);
+            document.getElementById('invoiceBalance').textContent = fmtMoney(h.Balance || 0.0);
+            document.getElementById('invoiceNotes').textContent = h.notes || '—';
+            document.getElementById('invoiceTitle').textContent = `Invoice #${h.InvoiceId || ''}`;
+
+            this.customerId = h.customerId || 0;
+        },
+        renderLines(lines) {
+          const tbody = document.querySelector('#invoiceTable tbody');
+          tbody.innerHTML = '';
+          if (!lines || !lines.length) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="5" class="text-center text-muted py-3">No detail lines</td>`;
+            tbody.appendChild(tr);
+            return;
+          }
+
+          lines.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td style="border:1px solid #dee2e6;padding:0.5rem;">${r.FromDay}</td>
+              <td style="border:1px solid #dee2e6;padding:0.5rem;">${r.ToDay}</td>
+              <td style="border:1px solid #dee2e6;padding:0.5rem;">${r.Days}</td>
+              <td style="border:1px solid #dee2e6;padding:0.5rem;text-align:right;">${(Math.round((r.quantity||0)*100)/100).toLocaleString()}</td>
+              <td style="border:1px solid #dee2e6;padding:0.5rem;text-align:right;">${fmtMoney(r.totalAmt)}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        },
+
+        async load(invoiceId) {
+          try {
+            if (!invoiceId) {
+              console.error('Invoice id missing');
+              return;
+            }
+            const raw = await nativeApi.call('getInvoiceDetails', {invoiceId});
+            const data = raw ? JSON.parse(raw) : null;
+            if (!data || data.error) {
+              console.error('getInvoice error:', data?.error);
+              document.querySelector('#invoiceTable tbody').innerHTML =
+                `<tr><td colspan="5" class="text-center text-danger py-3">Error: ${data?.error || 'Not found'}</td></tr>`;
+              return;
+            }
+            this.renderHeader(data.header || {});
+            this.renderLines(data.lines || []);
+          } catch (err) {
+            console.error('load invoice error:', err);
+          }
+        },
+
+        init(params) {
+          try {
+            const btnClose = document.getElementById('btnClose');
+            const btnReceive = document.getElementById('btnReceivePayment');
+            const backBtn = document.getElementById('backInvoice');
+
+            btnClose.onclick = backBtn.onclick = () => navigate();
+
+            btnReceive.onclick = () => {
+              if (!this.customerId) {
+                alert('Customer not found.');
+                return;
+              }
+              navigate('receive_payment', { customerId: this.customerId });
+            };
+
+            const invoiceId = +params.id || +params.invoiceId || 0;
+            this.load(invoiceId);
+          } catch (err) {
+            console.error('init_invoice outer error:', err);
+          }
+        }
+      };
+
+      window.init_invoice = params => {
+        try { InvoiceView.init(params); }
+        catch (err) { console.error('init_invoice crashed:', err); }
+      };
+    })();
+</script>

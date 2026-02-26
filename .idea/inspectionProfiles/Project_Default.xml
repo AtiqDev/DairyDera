@@ -1,0 +1,96 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="AddOperatorModifier" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="BooleanLiteralArgument" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="CharsetObjectCanBeUsed" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="ConvertSecondaryConstructorToPrimary" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="ConvertToStringTemplate" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="FillPermitsList" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="FuseStreamOperations" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GroovyUnusedAssignment" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GroovyUnusedCatchParameter" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GroovyUnusedDeclaration" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GroovyUnusedIncOrDec" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="JoinDeclarationAndAssignment" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="KotlinUnusedImport" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="LiftReturnOrAssignment" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="NonAsciiCharacters" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="OCUnusedClass" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="OCUnusedInstanceVariable" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="OCUnusedMethod" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="OCUnusedProperty" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="ObjectsEqualsCanBeSimplified" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="OptionalToIf" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="PatternVariablesCanBeReplacedWithCast" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="ReassignedVariable" enabled="false" level="TEXT ATTRIBUTES" enabled_by_default="false" />
+    <inspection_tool class="RecordCanBeClass" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="RedundantElseInIf" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="ReplaceJavaStaticMethodWithKotlinAnalog" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="ReplaceSizeCheckWithIsNotEmpty" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="ReplaceSizeZeroCheckWithIsEmpty" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="ReturnSeparatedFromComputation" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="SafeCastWithReturn" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="SimplifiableCallChain" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="SimplifyNegatedBinaryExpression" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="SizeReplaceableByIsEmpty" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="SortModifiers" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
+    <inspection_tool class="StreamToLoop" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="TrailingWhitespacesInTextBlock" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="TryStatementWithMultipleResources" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="TypeParameterExtendsObject" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UNUSED_IMPORT" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnnecessarilyQualifiedInnerClassAccess" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <option name="ignoreReferencesNeedingImport" value="false" />
+    </inspection_tool>
+    <inspection_tool class="UnnecessaryBlockStatement" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <option name="ignoreSwitchBranches" value="false" />
+    </inspection_tool>
+    <inspection_tool class="UnnecessaryCallToStringValueOf" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnnecessaryFullyQualifiedName" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <option name="m_ignoreJavadoc" value="false" />
+      <option name="ignoreInModuleStatements" value="true" />
+    </inspection_tool>
+    <inspection_tool class="UnnecessaryModifier" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnnecessaryParentheses" enabled="false" level="INFORMATION" enabled_by_default="false">
+      <option name="ignoreClarifyingParentheses" value="false" />
+      <option name="ignoreParenthesesOnConditionals" value="false" />
+      <option name="ignoreParenthesesOnLambdaParameter" value="false" />
+    </inspection_tool>
+    <inspection_tool class="UnnecessarySemicolon" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnnecessaryToStringCall" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnusedAssignment" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="REPORT_PREFIX_EXPRESSIONS" value="false" />
+      <option name="REPORT_POSTFIX_EXPRESSIONS" value="true" />
+      <option name="REPORT_REDUNDANT_INITIALIZER" value="true" />
+    </inspection_tool>
+    <inspection_tool class="UnusedFlow" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnusedLabel" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnusedProperty" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnusedReceiverParameter" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnusedSymbol" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnusedVariable" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UnusedVersionCatalogEntry" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UseExpressionBody" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="UsePropertyAccessSyntax" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="XmlUnusedNamespaceDeclaration" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="YAMLUnusedAnchor" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="unused" enabled="false" level="WARNING" enabled_by_default="false" checkParameterExcludingHierarchy="false">
+      <option name="LOCAL_VARIABLE" value="true" />
+      <option name="FIELD" value="true" />
+      <option name="METHOD" value="true" />
+      <option name="CLASS" value="true" />
+      <option name="PARAMETER" value="true" />
+      <option name="REPORT_PARAMETER_FOR_PUBLIC_METHODS" value="true" />
+      <option name="ADD_MAINS_TO_ENTRIES" value="true" />
+      <option name="ADD_APPLET_TO_ENTRIES" value="true" />
+      <option name="ADD_SERVLET_TO_ENTRIES" value="true" />
+      <option name="ADD_NONJAVA_TO_ENTRIES" value="true" />
+    </inspection_tool>
+  </profile>
+</component>

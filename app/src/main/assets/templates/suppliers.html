@@ -1,0 +1,72 @@
+<!-- File: android_asset/templates/suppliers.html -->
+<!-- Top Bar -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <!-- Back Button -->
+    <button
+            type="button"
+            class="btn btn-outline-secondary btn-icon me-3"
+            aria-label="Back to Dashboard"
+            onclick="navigate()"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+
+    <!-- Title -->
+    <h5 class="screen-title mb-0 flex-grow-1">Suppliers</h5>
+
+    <!-- Mode Toggle: Purchase / Edit -->
+    <div class="btn-group btn-group-sm me-3" role="group" aria-label="Supplier mode">
+        <input
+                type="radio"
+                class="btn-check"
+                name="supMode"
+                id="modePurchase"
+                value="Purchase"
+                autocomplete="off"
+        >
+        <label class="btn btn-outline-primary" for="modePurchase">Purchase</label>
+
+        <input
+                type="radio"
+                class="btn-check"
+                name="supMode"
+                id="modeEdit"
+                value="Edit"
+                autocomplete="off"
+        >
+        <label class="btn btn-outline-primary" for="modeEdit">Edit</label>
+    </div>
+
+    <!-- Add Supplier Button -->
+    <button
+            type="button"
+            id="btnAddSupplier"
+            class="btn btn-primary btn-icon"
+            aria-label="Add Supplier"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-user-plus"></i>
+    </button>
+</div>
+
+<!-- Global Search Bar -->
+<div class="container-fluid py-2 border-bottom">
+    <div class="input-group input-group-sm">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input
+                type="text"
+                id="supplierSearch"
+                class="form-control"
+                placeholder="Search ID, name, address, phone"
+        />
+    </div>
+</div>
+<main class="screen-body">
+    <!-- Supplier List -->
+    <div
+            id="supplierList"
+            class="list-group list-group-flush overflow-auto flex-fill"
+            style="max-height: calc(100vh - 140px);"
+    ></div>
+</main>

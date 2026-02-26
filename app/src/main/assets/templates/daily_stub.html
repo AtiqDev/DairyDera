@@ -1,0 +1,141 @@
+    <!-- File: templates/daily_stub.html -->
+    <div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+        <button class="btn btn-outline-secondary btn-sm btn-icon me-2"
+                onclick="navigate('dashboard')"
+                style="width: 32px; height: 32px; padding: 0;"
+        >
+            <i class="fas fa-arrow-circle-left"></i>
+        </button>
+        <div class="ConsoleLog"></div>
+        <h5 class="screen-title mb-0 flex-grow-1">Dairy</h5>
+    </div>
+
+    <div class="screen-body pt-2 bg-info bg-opacity-25">
+        <!-- Stock Table Section -->
+        <h4 class="mb-3">Stock</h4>
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="table-responsive">
+                <table id="stockTable" class="table table-striped table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-end">quantity</th>
+                        <th>Unit</th>
+                    </tr>
+                    </thead>
+                    <tbody id="stockTableBody">
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">Loading...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Inventory Actions Section (Rearranged Workflow) -->
+        <h4 class="mb-4">Work</h4>
+        <div class="row g-3 text-center mb-4">
+            <!-- Purchase -->
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+                        role="button"
+                        onclick="navigate('suppliers')"
+                >
+                    <i class="fas fa-shopping-cart fa-2x text-white bg-info rounded-circle p-2"></i>
+                    <div class="mt-2 small text-dark">Purchase</div>
+                </div>
+            </div>
+            <!-- Consume -->
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+                        role="button"
+                        onclick="navigate('stock_consumption')"
+                >
+                    <i class="fas fa-balance-scale fa-2x text-white bg-info rounded-circle p-2"></i>
+                    <div class="mt-2 small text-dark">Consume</div>
+                </div>
+            </div>
+            <!-- Labor Expense -->
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+                        role="button"
+                        onclick="navigate('worker_expense')"
+                >
+                    <i class="fas fa-file-invoice-dollar fa-2x text-white bg-danger rounded-circle p-2"></i>
+                    <div class="mt-2 small text-dark">Labor Expense</div>
+                </div>
+            </div>
+            <!-- Fuel Expense -->
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+                        role="button"
+                        onclick="navigate('fuel_expense')"
+                >
+                    <i class="fas fa-file-invoice-dollar fa-2x text-white bg-danger rounded-circle p-2"></i>
+                    <div class="mt-2 small text-dark">Fuel Expense</div>
+                </div>
+            </div>
+            <!-- Produce Milk -->
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+                        role="button"
+                        onclick="navigate('produce_milk')"
+                >
+                    <i class="fas fa-cow fa-2x text-white bg-info rounded-circle p-2"></i>
+                    <div class="mt-2 small text-dark">Produce Milk</div>
+                </div>
+            </div>
+            <!-- Mix Milk -->
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+                        role="button"
+                        onclick="navigate('mix_milk')"
+                >
+                    <i class="fas fa-cow fa-2x text-white bg-info rounded-circle p-2"></i>
+                    <div class="mt-2 small text-dark">Mix Milk</div>
+                </div>
+            </div>
+            <!-- Sale Milk -->
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+                        role="button"
+                        onclick="navigate('customers')"
+                >
+                    <i class="fas fa-cash-register fa-2x text-white bg-info rounded-circle p-2"></i>
+                    <div class="mt-2 small text-dark">Sale Milk</div>
+                </div>
+            </div>
+            <!-- Close Day (added at end as not in specified workflow) -->
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+                        role="button"
+                        onclick="navigate('pl_report')"
+                >
+                    <i class="fas fa-exchange-alt fa-2x text-white bg-info rounded-circle p-2"></i>
+                    <div class="mt-2 small text-dark">Close Day</div>
+                </div>
+            </div>
+            <!-- View Journal (added at end as not in specified workflow) -->
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <div
+                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
+                        role="button"
+                        onclick="navigate('journal_report')"
+                >
+                    <i class="fas fa-book fa-2x text-white bg-danger rounded-circle p-2"></i>
+                    <div class="mt-2 small text-dark">View Journal</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+

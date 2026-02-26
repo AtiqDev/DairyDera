@@ -1,0 +1,104 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f5">
+
+    <!-- Header -->
+    <TextView
+        android:id="@+id/txtHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Invoice Exporter"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <!-- 🗓️ Month Dropdown -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Month:"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:layout_marginEnd="12dp" />
+
+        <Spinner
+            android:id="@+id/spMonth"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown" />
+    </LinearLayout>
+
+    <!-- 📄 PDF / JPG toggle -->
+    <RadioGroup
+        android:id="@+id/rgFormat"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <RadioButton
+            android:id="@+id/rbJpg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="JPG"
+            android:checked="true" />
+
+        <RadioButton
+            android:id="@+id/rbPdf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PDF"
+            android:layout_marginStart="24dp" />
+    </RadioGroup>
+
+    <!-- Buttons -->
+    <Button
+        android:id="@+id/btnExportInvoices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="EXPORT INVOICES"
+        android:layout_marginTop="4dp" />
+
+    <Button
+        android:id="@+id/btnBackMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="BACK TO MAIN"
+        android:layout_marginTop="8dp" />
+
+    <!-- Log textarea -->
+    <EditText
+        android:id="@+id/editLog"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="Export logs..."
+        android:gravity="top|start"
+        android:inputType="textMultiLine"
+        android:background="#ffffff"
+        android:textColor="#000000"
+        android:padding="8dp"
+        android:scrollbars="vertical"
+        android:overScrollMode="always"
+        android:layout_marginTop="12dp" />
+
+    <!-- Hidden WebView -->
+    <FrameLayout
+        android:id="@+id/hiddenWebViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:visibility="gone" />
+</LinearLayout>

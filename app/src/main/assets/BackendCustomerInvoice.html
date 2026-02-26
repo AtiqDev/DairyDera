@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Single Page APP – Dairy Farm POS</title>
+
+    <!-- FontAwesome first -->
+    <link rel="stylesheet" href="/assets/css/awsomef.css">
+
+    <!-- Your local Bootstrap -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.css">
+
+    <!-- Your overrides (optional) -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="theme.css">
+</head>
+<body class="h-100 m-0 p-0 d-flex flex-column">
+
+<!-- header stays pinned at top -->
+<!-- dark green header -->
+<header
+        class="p-3 text-white"
+        style="background-color: #004d00;"
+>
+    <h1 class="h4 mb-0">Dairy Farm POS</h1>
+</header>
+
+<!-- main takes the rest of the height -->
+<div id="app" class="flex-fill container-fluid p-0">
+    <div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+        <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm btn-icon me-2"
+                onclick="navigate()"
+                aria-label="Back"
+                style="width: 32px; height: 32px; padding: 0;"
+        >
+            <i class="fas fa-arrow-circle-left"></i>
+        </button>
+        <div class="ConsoleLog"></div>
+        <h5 class="screen-title mb-0 flex-grow-1">Customer Invoice</h5>
+    </div>
+
+    <main class="screen-body invoice-screen">
+        <div id="invoice-content" class="invoice-container">
+            <h5 id="report-title" class="text-center fw-bold mb-3">Loading Invoice...</h5>
+            <div id="invoice-details" class="mb-3"></div>
+
+            <div class="table-scroll-wrapper">
+                <table id="invoice-table" class="table table-sm table-bordered table-striped invoice-table">
+                    <thead id="invoice-thead" class="table-light"></thead>
+                    <tbody id="invoice-tbody"></tbody>
+                </table>
+            </div>
+
+            <div id="payment-details" class="signature-section"></div>
+        </div>
+    </main>
+</div>
+<style>
+    /* Scoped styles only for the invoice screen */
+    .invoice-screen {
+        background-color: #ffffff;
+        color: #000;
+        padding: 1rem;
+        min-height: 100vh;
+        overflow: auto;             /* enables vertical scrolling */
+        -webkit-overflow-scrolling: touch;
+    }
+    .invoice-screen .invoice-container {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        overflow-x: auto;           /* enables horizontal scroll for wide tables */
+    }
+    .invoice-screen .invoice-table {
+        background-color: #ffffff;
+        white-space: nowrap;        /* prevents text wrapping */
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .invoice-screen .invoice-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .invoice-screen .invoice-table th,
+    .invoice-screen .invoice-table td {
+        padding: 0.45rem;
+        border-color: #dee2e6;
+        vertical-align: middle;
+    }
+    .invoice-screen .invoice-meta p {
+        margin: .15rem 0;
+        white-space: nowrap;
+    }
+    .invoice-screen .text-end {
+        text-align: right;
+    }
+    .invoice-screen .total-row td {
+        font-weight: bold;
+        border-top: 2px solid #000;
+    }
+    .invoice-screen .signature-section {
+        padding-top: 20px;
+        font-size: 0.95em;
+        white-space: nowrap;
+    }
+    .invoice-screen .muted {
+        color: #6c757d;
+    }
+    .table-scroll-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+</style>
+<script src="message_port.js"></script>
+<script>
+    (function () {
+        // Keep global entry for SPA
+        window.init_customer_invoice = function () {
+            renderInvoiceForCustomer();
+        };
+
+        function isNumericCell(val) {
+            if (val == null) return false;
+            return /^-?\d+(?:[\d,]*\d)?(?:\.\d+)?$/.test(String(val).replace(/\s/g,''));
+        }
+
+        function isPaymentRow(row) {
+            if (!row) return false;
+            return row.some(c => typeof c === 'string' && (
+                c.toLowerCase().includes('bank') ||
+                c.toLowerCase().includes('iban') ||
+                c.toLowerCase().includes('account') ||
+                c.toLowerCase().includes('payment') ||
+                c.toLowerCase().includes('method')
+            ));
+        }
+
+        async function renderInvoiceForCustomer() {
+            const titleEl = document.getElementById('report-title');
+            const detailsEl = document.getElementById('invoice-details');
+            const theadEl = document.getElementById('invoice-thead');
+            const tbodyEl = document.getElementById('invoice-tbody');
+            const paymentEl = document.getElementById('payment-details');
+
+            // clear UI
+            titleEl.textContent = 'Loading Invoice...';
+            detailsEl.innerHTML = '';
+            theadEl.innerHTML = '';
+            tbodyEl.innerHTML = '';
+            paymentEl.innerHTML = '';
+
+            // fetch JSON from Android
+            let jsonString = null;
+            try {
+                jsonString = await nativeApi.call('getCustomerInvoiceDataString', {customerId: 1});
+                console.log('nativeApi.call() raw return:', JSON.stringify(jsonString));
+            } catch (ex) {
+                console.error('Failed to call nativeApi:', ex);
+                console.warn('nativeApi not found or error - using local sample JSON for preview.');
+                const sample = {
+                    status: "success",
+                    data: [
+                        ["Milk Invoice for October 2025",null,null,null,null,null],
+                        ["From Atiq Ur Rehman Contact # 0000 0606700",null,null,null,null,null],
+                        ["Bill To:","Atiq",null,null,null,null],
+                        [null,null,null,null,null,null],
+                        ["From","To","Days","Qty","Total Qty","amount"],
+                        ["12-Oct","12-Oct","1.0","7.5","7.50","Rs 1,650.00"],
+                        [null,null,null,"TOTAL","7.50","Rs 1,650.00"],
+                        [null,null,"Payment Method",null,null,null],
+                        [null,null,"Bank name: Standard Chartered",null,null,null],
+                        [null,null,"Account name: ATIQ UR REHMAN",null,null,null],
+                        [null,null,"IBAN: PK95SCBL0000001502608000",null,null,null]
+                    ]
+                };
+                jsonString = JSON.stringify(sample);
+            }
+
+            // parse JSON
+            let response;
+            try {
+                response = JSON.parse(jsonString);
+            } catch (ex) {
+                console.error('Failed to parse JSON from nativeApi:', ex);
+                titleEl.textContent = 'Data Parsing Error';
+                detailsEl.innerHTML = `<p class="text-danger">Invalid data received from Android.</p>`;
+                return;
+            }
+
+            if (!response || response.status !== 'success' || !Array.isArray(response.data)) {
+                console.error('Invoice data missing or error:', response && response.message);
+                titleEl.textContent = 'Error Loading Invoice';
+                detailsEl.innerHTML = `<p class="text-danger">Failed to retrieve data: ${(response && response.message) || 'Unknown error'}</p>`;
+                return;
+            }
+
+            const rows = response.data;
+            if (rows.length === 0) {
+                titleEl.textContent = 'No data';
+                return;
+            }
+
+            // first row’s first cell as title
+            titleEl.textContent = rows[0][0] || 'Invoice';
+
+            // render all rows directly
+            rows.forEach((r, i) => {
+                if (!Array.isArray(r)) return;
+                const hasContent = r.some(c => c && String(c).trim().length > 0);
+                if (!hasContent) return;
+
+                // treat simple top rows (“From …” and “Bill To”) as meta
+                if (i < 4 && !isPaymentRow(r)) {
+                    const parts = r.map(c => c ? String(c).trim() : '').filter(s => s.length > 0);
+                    if (parts.length > 0) {
+                        detailsEl.insertAdjacentHTML('beforeend', `<p class="invoice-meta">${parts.join(' ')}</p>`);
+                        return;
+                    }
+                }
+
+                // payment section
+                if (isPaymentRow(r)) {
+                    const parts = r.map(c => c ? String(c).trim() : '').filter(s => s.length > 0);
+                    if (parts.length > 0) {
+                        if (!paymentEl.innerHTML) paymentEl.innerHTML = '<h6 class="fw-semibold">Payment Details</h6>';
+                        paymentEl.insertAdjacentHTML('beforeend', `<p class="mb-0">${parts.join(' ')}</p>`);
+                    }
+                    return;
+                }
+
+                // normal table row
+                const cellsHtml = r.map(c => {
+                    const raw = c == null ? '' : String(c);
+                    if (/^rs/i.test(raw.trim())) return `<td class="text-end">${raw}</td>`;
+                    if (isNumericCell(raw)) return `<td class="text-end">${Number(String(raw).replace(/,/g,'')).toLocaleString(undefined,{minimumFractionDigits:raw.includes('.')?2:0})}</td>`;
+                    return `<td>${raw}</td>`;
+                }).join('');
+                tbodyEl.insertAdjacentHTML('beforeend', `<tr>${cellsHtml}</tr>`);
+            });
+        }
+    })();
+</script>
+</body>
+</html>

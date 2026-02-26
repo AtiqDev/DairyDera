@@ -1,0 +1,60 @@
+<!-- Top Bar -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button id="backPurchaseForm" class="btn btn-outline-secondary btn-icon me-3" onclick="navigate()" style="width: 32px; height: 32px; padding: 0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <div class="ConsoleLog"></div>
+    <h5 class="screen-title mb-0 flex-grow-1">Receive Payment</h5>
+    <button class="btn btn-outline-secondary btn-icon" style="width: 32px; height: 32px; padding: 0;" onclick="navigate()">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
+
+<main class="screen-body">
+    <form id="paymentForm" novalidate>
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Customer</label>
+                    <div id="customerName" class="fs-5 text-primary">Loading...</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="paymentAmount" class="form-label">Payment amount <span class="text-danger">*</span></label>
+                    <input type="number" step="0.01" min="0.01" class="form-control amount-input" id="paymentAmount" required />
+                    <div class="invalid-feedback">Enter valid amount</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="notes" class="form-label">notes (Optional)</label>
+                    <textarea id="notes" class="form-control" rows="2" placeholder="Cash, Bank transfer, etc."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Open Invoices Preview -->
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Open Invoices</span>
+                <small class="text-muted" id="totalBalance">Balance: $0.00</small>
+            </div>
+
+            <!-- Previous Payment Balance Banner -->
+            <div id="previousBalanceBanner" class="alert alert-info m-3 d-none" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                <span id="previousBalanceText"></span>
+            </div>
+
+            <div class="card-body p-0" id="openInvoices">
+                <div class="p-3 text-center text-muted">Loading invoices...</div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button" onclick="navigate()" class="btn btn-secondary">Cancel</button>
+            <button type="submit" id="receiveBtn" class="btn btn-success">
+                <i class="fas fa-money-bill-wave"></i> Receive Payment
+            </button>
+        </div>
+    </form>
+</main>

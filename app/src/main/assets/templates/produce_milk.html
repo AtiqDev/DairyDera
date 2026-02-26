@@ -1,0 +1,77 @@
+<!-- File: templates/produce_milk.html -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button
+        type="button"
+        class="btn btn-outline-secondary btn-sm btn-icon me-2"
+        aria-label="Back to Inventory"
+        onclick="navigate()"
+        style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="screen-title mb-0 flex-grow-1" id="productionFormTitle">Milk Production</h5>
+    <button
+            id="resetProductionForm"
+            type="button"
+            class="btn btn-outline-secondary btn-sm btn-icon"
+            aria-label="Reset"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-redo"></i>
+
+    </button>
+</div>
+
+<main class="screen-body">
+    <div class="card mx-auto" style="max-width: 500px;">
+        <div class="card-header">Production Details</div>
+        <div class="card-body">
+            <form id="production-form" class="mb-0">
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label for="prod-date" class="form-label">Date</label>
+                        <input type="date" id="prod-date" class="form-control" required />
+                    </div>
+                    <div class="col-6">
+                        <label for="prod-qty" class="form-label">quantity</label>
+                        <input
+                                type="number"
+                                id="prod-qty"
+                                class="form-control"
+                                step="0.1"
+                                min="0.01"
+                                required
+                        />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label for="prod-product" class="form-label">Product</label>
+                        <select id="prod-product" class="form-select" required></select>
+                    </div>
+                    <div class="col-6">
+                        <label for="prod-uom" class="form-label">Unit</label>
+                        <select id="prod-uom" class="form-select" required></select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="prod-notes" class="form-label">notes</label>
+                    <textarea id="prod-notes" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button
+                            type="button"
+                            id="saveProductionForm"
+                            class="btn btn-success"
+                            title="Save Production"
+                    >
+                        <i class="fas fa-save me-1"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

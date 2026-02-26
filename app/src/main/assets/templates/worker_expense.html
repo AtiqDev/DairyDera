@@ -1,0 +1,48 @@
+<!-- File: templates/worker_expense.html -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button class="btn btn-outline-secondary btn-sm btn-icon me-2" onclick="navigate()">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="screen-title mb-0 flex-grow-1">Record Labor Expense</h5>
+    <button id="resetWorkerForm" class="btn btn-outline-secondary btn-sm btn-icon">
+        <i class="fas fa-redo"></i>
+    </button>
+</div>
+
+<main class="screen-body">
+    <div class="card mx-auto" style="max-width:500px;">
+        <div class="card-header">Labor Expense Details</div>
+        <div class="card-body">
+            <form id="worker-form">
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label for="worker-date" class="form-label">Date</label>
+                        <input type="date" id="worker-date" class="form-control" required/>
+                    </div>
+                    <div class="col-6">
+                        <label for="worker-amt" class="form-label">amount</label>
+                        <input type="number" id="worker-amt" class="form-control" step="0.01" required/>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="worker-id" class="form-label">Worker</label>
+                    <select id="worker-id" class="form-select" required>
+                        <option value="" disabled selected>Select worker…</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="worker-notes" class="form-label">notes</label>
+                    <textarea id="worker-notes" class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" id="saveWorkerForm" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

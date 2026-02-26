@@ -1,0 +1,126 @@
+<!-- File: templates/sale.html -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button
+            id="backSaleForm"
+            type="button"
+            class="btn btn-outline-secondary btn-sm btn-icon me-2"
+            aria-label="Back to Customers"
+            style="width: 32px; height: 32px; padding: 0;"
+            onclick="navigate()"
+    >
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <div class="ConsoleLog"></div>
+    <h5 class="screen-title mb-0 flex-grow-1" id="saleFormTitle">Sale Form</h5>
+    <button
+            id="resetSaleForm"
+            type="button"
+            class="btn btn-outline-secondary btn-sm btn-icon"
+            aria-label="Reset"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-redo"></i>
+    </button>
+</div>
+
+<main class="screen-body">
+    <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card-body">
+            <form id="sale-form" class="mb-0">
+                <div class="mb-3">
+                    <label for="saleDate" class="form-label">Sale Date</label>
+                    <input type="date" id="saleDate" class="form-control" required />
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="rate" class="form-label">rate</label>
+                        <input type="number" id="rate" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="qty" class="form-label">quantity</label>
+                        <input type="number" step="0.1" id="qty" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" class="form-select"></select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="notes" class="form-label">notes</label>
+                    <textarea id="notes" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="button" id="saveSaleForm" class="btn btn-success" title="Save">
+                        <i class="fas fa-save me-1"></i> Save
+                    </button>
+                    <button type="button" id="backSalesBtn" class="btn btn-primary" title="Back Sales">
+                        <i class="fas fa-calendar-alt me-1"></i> Back Sales
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr class="my-4" />
+    <h6 class="mb-3 fw-semibold">Customer Invoice</h6>
+
+    <div id="custInvoiceSection" class="mb-3">
+        <div class="bg-white border rounded p-2">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                <div class="d-flex align-items-center">
+                    <label for="custInvoiceMonth" class="form-label mb-0 me-2 fw-semibold">Month:</label>
+                    <select id="custInvoiceMonth" class="form-select form-select-sm" style="max-width:160px;"></select>
+                </div>
+                <button id="btnRefreshInvoice" type="button" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                </button>
+            </div>
+
+            <div id="custInvoiceContainer" class="small">
+                <h6 id="custInvTitle" class="text-center fw-bold mb-3">No invoice loaded</h6>
+                <div id="custInvDetails" class="mb-3"></div>
+                <div class="table-scroll-wrapper">
+                    <table id="custInvTable" class="table table-sm table-bordered table-striped mb-2">
+                        <thead id="custInvHead" class="table-light"></thead>
+                        <tbody id="custInvBody"></tbody>
+                    </table>
+                </div>
+                <div id="custInvPayment" class="signature-section"></div>
+            </div>
+        </div>
+    </div>
+    <div style="height:50px;"></div>
+</main>
+
+<!-- ✅ Popup for Back Sales -->
+<div
+        id="backSalesPopup"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999;
+         align-items:center; justify-content:center;"
+>
+    <div
+            style="background:#fff; padding:20px; border-radius:12px; width:320px; box-shadow:0 4px 8px rgba(0,0,0,0.2);"
+    >
+        <h6 class="mb-3 text-center">Back Sales Range</h6>
+        <div class="mb-3">
+            <label>From Date</label>
+            <input type="date" id="fromDate" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>To Date</label>
+            <input type="date" id="toDate" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label>quantity</label>
+            <input type="number" id="rangeQty" class="form-control" step="0.1" />
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+            <button id="closePopup" class="btn btn-secondary btn-sm">Cancel</button>
+            <button id="saveBackSales" class="btn btn-success btn-sm">Save</button>
+        </div>
+    </div>
+</div>
+

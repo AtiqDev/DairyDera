@@ -1,0 +1,59 @@
+<!-- File: templates/query.html -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <!-- Left: Back Button -->
+    <button  class="btn btn-outline-secondary btn-sm btn-icon me-2" style="width: 32px; height: 32px; padding: 0;"
+             onclick="navigate('dashboard')"
+    >
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+
+    <!-- Center: Title -->
+    <h5 class="screen-title mb-0 flex-grow-1 text-center">Raw SQL Query</h5>
+
+    <!-- Right: Undo Button -->
+    <button
+            id="btnUndo"
+            type="button"
+            class="btn btn-outline-secondary btn-sm btn-icon"
+            aria-label="Undo"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-undo"></i>
+    </button>
+</div>
+
+<main class="screen-body">
+    <div class="container-fluid">
+        <!-- Table Selector -->
+        <div class="row mb-1">
+            <div class="col-md-6 d-flex align-items-center">
+                <label for="table-list" class="me-2 mb-0">Tables:</label>
+                <select id="table-list" class="form-select form-select-sm flex-grow-1">
+                    <option value="">— choose table —</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Editor + Execute Button -->
+        <div class="row">
+            <div class="col-12">
+                <textarea id="raw-query" style="display:none;" placeholder="SELECT …"></textarea>
+                <div id="editor" class="border rounded"></div>
+            </div>
+        </div>
+
+        <!-- Button Row -->
+        <div class="row">
+            <div class="col-12 text-end">
+                <button id="execute-query" class="btn btn-primary btn-sm">
+                    <i class="fas fa-play me-1"></i> Execute Query
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Query Results -->
+        <div id="query-results" class="mt-3 border rounded p-2 overflow-auto"
+             style="max-height:60vh;"></div>
+    </div>
+</main>

@@ -1,0 +1,191 @@
+<!-- Top Bar -->
+<div class="screen-topbar bg-light border-bottom">
+    <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm btn-icon me-2"
+            onclick="navigate('inventory_stub')"
+            aria-label="Back"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <div class="screen-title">Units of Measurement</div>
+</div>
+<main class="screen-body">
+    <div class="card mb-4">
+        <div class="card-header">Manage UOM</div>
+        <div class="card-body">
+            <form id="uom-form" class="mb-0">
+                <input type="hidden" id="uom-id">
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="uom-name" class="form-label">name</label>
+                        <input
+                                type="text"
+                                id="uom-name"
+                                class="form-control"
+                                placeholder="Enter unit name"
+                                required
+                        />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="uom-type" class="form-label">Type</label>
+                        <input
+                                type="text"
+                                id="uom-type"
+                                class="form-control"
+                                placeholder="Enter unit type"
+                                required
+                        />
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <!-- New clears form -->
+                    <button
+                            type="button"
+                            id="btnUomNew"
+                            class="btn btn-secondary btn-icon"
+                            title="New UOM"
+                    >
+                        <i class="fas fa-plus"></i>
+                    </button>
+
+                    <!-- Save handles both create & update -->
+                    <button
+                            type="button"
+                            id="btnUomSave"
+                            class="btn btn-primary btn-icon"
+                            title="Save UOM"
+                            disabled
+                    >
+                        <i class="fas fa-save"></i>
+                    </button>
+
+                    <!-- Delete only when editing -->
+                    <button
+                            type="button"
+                            id="btnUomDelete"
+                            class="btn btn-danger btn-icon"
+                            title="Delete UOM"
+                            disabled
+                    >
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Existing UOMs -->
+    <div class="card mb-4">
+        <div class="card-header">Existing UOMs</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="uoms-table" class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>name</th>
+                        <th>Type</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Conversions -->
+    <div class="card mb-4">
+        <div class="card-header">Manage Conversions</div>
+        <div class="card-body">
+            <form id="conversion-form" class="mb-3">
+                <input type="hidden" id="conversion-id">
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <label for="from-uom" class="form-label">From UOM</label>
+                        <select id="from-uom" class="form-select" required></select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="to-uom" class="form-label">To UOM</label>
+                        <select id="to-uom" class="form-select" required></select>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label for="conversion-factor" class="form-label">Factor</label>
+                        <input
+                                type="number"
+                                id="conversion-factor"
+                                class="form-control"
+                                step="0.001"
+                                min="0.001"
+                                placeholder="e.g. 40.0"
+                                required
+                        />
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <!-- New clears form -->
+                    <button
+                            type="button"
+                            id="btnConvNew"
+                            class="btn btn-secondary btn-icon"
+                            title="New Conversion"
+                    >
+                        <i class="fas fa-plus"></i>
+                    </button>
+
+                    <!-- Save handles create & update -->
+                    <button
+                            type="button"
+                            id="btnConvSave"
+                            class="btn btn-primary btn-icon"
+                            title="Save Conversion"
+                            disabled
+                    >
+                        <i class="fas fa-save"></i>
+                    </button>
+
+                    <!-- Delete only when editing -->
+                    <button
+                            type="button"
+                            id="btnConvDelete"
+                            class="btn btn-danger btn-icon"
+                            title="Delete Conversion"
+                            disabled
+                    >
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </form>
+
+            <p class="conversion-hint text-muted fst-italic mt-3">
+                Hint: From 40kg to kg: 1 unit of 40kg = 40 units of kg, so factor = 40.0.
+            </p>
+        </div>
+    </div>
+
+    <!-- Existing Conversions -->
+    <div class="card">
+        <div class="card-header">Existing Conversions</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="conversions-table" class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Factor</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</main>

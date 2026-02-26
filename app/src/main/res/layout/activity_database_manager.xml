@@ -1,0 +1,92 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f5">
+
+    <!-- Header Label -->
+    <TextView
+        android:id="@+id/txtHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dairy Farm POS Startup"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Database Info -->
+    <TextView
+        android:id="@+id/txtDbInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Database Info"
+        android:textSize="14sp"
+        android:textColor="#222"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Buttons stacked vertically -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="8dp">
+
+        <Button
+            android:id="@+id/btnImport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="IMPORT DATABASE" />
+
+        <Button
+            android:id="@+id/btnExport"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="EXPORT DATABASE" />
+
+        <Button
+            android:id="@+id/btnDeleteExports"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="DELETE EXPORTED FILES" />
+    </LinearLayout>
+
+    <!-- Start App -->
+    <Button
+        android:id="@+id/btnStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="START APP"
+        android:layout_marginTop="8dp" />
+
+    <!-- Timer -->
+    <TextView
+        android:id="@+id/txtTimer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Starting in 3..."
+        android:textSize="16sp"
+        android:gravity="center"
+        android:layout_marginVertical="8dp" />
+
+    <!-- Logs -->
+    <EditText
+        android:id="@+id/editLog"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="Logs / Errors"
+        android:gravity="top|start"
+        android:inputType="textMultiLine"
+        android:background="#ffffff"
+        android:textColor="#000000"
+        android:padding="8dp"
+        android:scrollbars="vertical" />
+
+</LinearLayout>

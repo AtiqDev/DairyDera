@@ -1,0 +1,22 @@
+<!-- File: invoices.html -->
+
+<!-- Top Bar -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button id="backInvoices" class="btn btn-outline-secondary btn-icon me-3" style="width: 32px; height: 32px; padding: 0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="screen-title mb-0 flex-grow-1">Invoices</h5>
+
+    <div class="btn-group btn-group-sm ms-auto" role="group" aria-label="Invoice Status">
+        <input type="radio" class="btn-check" name="invStatus" id="statusOpen" value="Open" checked autocomplete="off">
+        <label class="btn btn-outline-primary" for="statusOpen">Open</label>
+
+        <input type="radio" class="btn-check" name="invStatus" id="statusPaid" value="Paid" autocomplete="off">
+        <label class="btn btn-outline-primary" for="statusPaid">Paid</label>
+    </div>
+</div>
+
+<!-- Body -->
+<main class="screen-body" id="invoiceContainer" style="max-height: calc(100vh - 90px);">
+    <div id="invoiceList" class="list-group list-group-flush"></div>
+</main>

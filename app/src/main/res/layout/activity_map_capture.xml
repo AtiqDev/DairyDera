@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mapContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Google Map fragment -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/mapFragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Overlay: Error or info messages -->
+    <TextView
+        android:id="@+id/txtErrorMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#AA000000"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textSize="14sp"
+        android:layout_gravity="top" />
+
+    <!-- Overlay: Retry and Back controls -->
+    <LinearLayout
+        android:id="@+id/errorControls"
+        style="?android:attr/buttonBarStyle"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btnRetry"
+            style="?android:attr/buttonBarButtonStyle"
+            android:text="@string/retry"
+            android:layout_marginEnd="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnBack"
+            style="?android:attr/buttonBarButtonStyle"
+            android:text="@string/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+</FrameLayout>

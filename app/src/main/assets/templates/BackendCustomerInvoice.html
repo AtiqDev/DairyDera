@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Single Page APP – Dairy Farm POS</title>
+
+    <link rel="stylesheet" href="/assets/css/awsomef.css">
+    <link rel="stylesheet" href="/assets/css/bootstrap.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        .invoice-screen { background-color:#fff; color:#000; padding:1rem; min-height:100vh; overflow:auto; -webkit-overflow-scrolling:touch; }
+        .invoice-screen .invoice-container { background:#fff; border-radius:12px; padding:1rem; box-shadow:0 1px 3px rgba(0,0,0,0.08); overflow-x:auto; }
+        .invoice-screen .invoice-table { background:#fff; white-space:nowrap; width:100%; border-collapse:collapse; }
+        .invoice-screen .invoice-table th { background:#f8f9fa; font-weight:600; white-space:nowrap; }
+        .invoice-screen .invoice-table th, .invoice-screen .invoice-table td { padding:0.45rem; border-color:#dee2e6; vertical-align:middle; }
+        .invoice-screen .invoice-meta p { margin:.15rem 0; white-space:nowrap; }
+        .invoice-screen .text-end { text-align:right; }
+        .invoice-screen .total-row td { font-weight:bold; border-top:2px solid #000; }
+        .invoice-screen .signature-section { padding-top:20px; font-size:0.95em; white-space:nowrap; }
+        .invoice-screen .muted { color:#6c757d; }
+        .table-scroll-wrapper { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    </style>
+</head>
+<body class="h-100 m-0 p-0 d-flex flex-column">
+
+<header class="p-3 text-white" style="background-color: #004d00;">
+    <h1 class="h4 mb-0">Dairy Farm POS</h1>
+</header>
+
+<div id="app" class="flex-fill container-fluid p-0">
+    <div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+        <button type="button" class="btn btn-outline-secondary btn-sm btn-icon me-2"
+                onclick="navigate()" aria-label="Back"
+                style="width: 32px; height: 32px; padding: 0;">
+            <i class="fas fa-arrow-circle-left"></i>
+        </button>
+        <div class="ConsoleLog"></div>
+        <h5 class="screen-title mb-0 flex-grow-1">Customer Invoice</h5>
+    </div>
+
+    <main class="screen-body invoice-screen">
+        <div id="invoice-content" class="invoice-container">
+            <h5 id="report-title" class="text-center fw-bold mb-3">Loading Invoice...</h5>
+            <div id="invoice-details" class="mb-3"></div>
+            <div class="table-scroll-wrapper">
+                <table id="invoice-table" class="table table-sm table-bordered table-striped invoice-table">
+                    <thead id="invoice-thead" class="table-light"></thead>
+                    <tbody id="invoice-tbody"></tbody>
+                </table>
+            </div>
+            <div id="payment-details" class="signature-section"></div>
+        </div>
+    </main>
+</div>
+
+
+</body>
+</html>

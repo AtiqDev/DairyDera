@@ -1,0 +1,108 @@
+<!-- Top Bar -->
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button
+            type="button"
+            id="backStock"
+            class="btn btn-outline-secondary btn-sm btn-icon me-2"
+            onclick="navigate()"
+            aria-label="Back"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+
+    <h5 class="screen-title mb-0 flex-grow-1">Manage Stock</h5>
+
+    <button
+            type="button"
+            id="btnStockNew"
+            class="btn btn-primary btn-icon me-2"
+            aria-label="New Stock"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <button
+            type="button"
+            id="btnStockRecal"
+            class="btn btn-warning btn-icon"
+            aria-label="Recalibrate"
+            style="width: 32px; height: 32px; padding: 0;"
+    >
+        <i class="fas fa-sync-alt"></i>
+    </button>
+</div>
+
+<main class="screen-body">
+
+    <!-- Manage Stock Card -->
+    <div class="card mb-4">
+        <div class="card-header">Manage Stock</div>
+        <div class="card-body">
+            <form id="stock-form" class="mb-0">
+                <input type="hidden" id="stock-product-id">
+
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="product-select" class="form-label">Product</label>
+                        <select id="product-select" class="form-select" required></select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="quantity" class="form-label">quantity</label>
+                        <input
+                                type="number"
+                                id="quantity"
+                                class="form-control"
+                                step="any"
+                                min="0.01"
+                                required
+                                disabled
+                        />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="unit-select" class="form-label">Unit</label>
+                        <select id="unit-select" class="form-select" required disabled></select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="type-select" class="form-label">Type</label>
+                        <select id="type-select" class="form-select">
+                            <option value="in">Add</option>
+                            <option value="out">Remove</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="button" id="btnStockSave" class="btn btn-primary btn-icon" disabled>
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button type="button" id="btnStockClear" class="btn btn-secondary btn-icon" title="Clear">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stock History Card -->
+    <div class="card">
+        <div class="card-header">Stock History</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="stock-history" class="table table-hover table-striped mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Product</th>
+                        <th>quantity</th>
+                        <th>Unit</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</main>

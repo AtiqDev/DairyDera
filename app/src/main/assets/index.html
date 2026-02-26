@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Single Page APP – Dairy Farm POS</title>
+
+    <!-- FontAwesome first -->
+    <link rel="stylesheet" href="/assets/css/awsomef.css">
+
+    <!-- Your local Bootstrap -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.css">
+
+    <!-- Your overrides (optional) -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="theme.css">
+    <script src="message_port.js"></script>
+</head>
+<body class="h-100 m-0 p-0 d-flex flex-column">
+
+<!-- header stays pinned at top -->
+<!-- dark green header -->
+<header
+        class="p-3 text-white"
+        style="background-color: #004d00;"
+>
+    <h1 class="h4 mb-0">Dairy Farm POS</h1>
+</header>
+
+
+
+<!-- progress (if you need it) -->
+<div id="progress" class="w-100"></div>
+
+<!-- main takes the rest of the height -->
+<main id="app" class="flex-fill container-fluid p-0">
+    <!-- your SPA screens will be injected here full-width/full-height -->
+</main>
+
+<script src="global.js"></script>
+<script src="s1_daily_stub.js"></script>
+<script src="s1_dasbhoard.js"></script>
+
+<script src="s2_purchase.js"></script>
+<script src="s2_suppliers.js"></script>
+<script src="s2_supplier_form.js"></script>
+
+<script src="s3_sales.js"></script>
+
+<script src="s4_stock_consumption.js"></script>
+
+<script src="s5_customers.js"></script>
+<script src="s5_customer_form.js"></script>
+<script src="s5_customer_invoice.js"></script>
+<script src="s5_invoices.js"></script>
+<script src="s5_invoice.js"></script>
+
+<script src="s6_receive_payment.js"></script>
+
+<script src="s7_mix_milk.js"></script>
+<script src="s7_produce_milk.js"></script>
+<script src="s7_produce_rawmilk.js"></script>
+
+<script src="s8_uoms.js"></script>
+<script src="s8_products.js"></script>
+<script src="s8_stock.js"></script>
+<script src="s9_fuel_expense.js"></script>
+<script src="s9_worker_expense.js"></script>
+
+<script src="s0_account.js"></script>
+<script src="s0_account_types.js"></script>
+<script src="s10_query.js"></script>
+
+<script src="appNav.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

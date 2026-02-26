@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Income Statement</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+          /* Subject matter: Indigo for P&L / Income Statement */
+          --brand:        #6366f1;
+          --brand-dark:   #4f46e5;
+          --brand-light:  rgba(99,102,241,.08);
+          --bg:            #f2f4f8;
+          --surface:       #ffffff;
+          --surface2:      #f7f8fa;
+          --border:        #e2e6ed;
+          --income:        #10b981;
+          --expense:       #ef4444;
+          --text-1:        #0f172a;
+          --text-2:        #64748b;
+          --text-3:        #94a3b8;
+          --font:          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          --mono:          'Courier New', Courier, monospace;
+          --radius:        10px;
+          --radius-sm:     6px;
+          --topbar-h:      52px;
+        }
+
+        html, body {
+          height: 100%; background: var(--bg); color: var(--text-1);
+          font-family: var(--font); font-size: 14px;
+          -webkit-tap-highlight-color: transparent; overscroll-behavior: none;
+        }
+
+        /* ── TOPBAR ──────────────────────────────────────── */
+        .screen-topbar {
+          position: sticky; top: 0; z-index: 200;
+          display: flex; align-items: center; gap: 10px;
+          height: var(--topbar-h); padding: 0 4px;
+          background: var(--surface); border-bottom: 1px solid var(--border);
+          box-shadow: 0 1px 4px rgba(0,0,0,.07);
+        }
+        .screen-title { flex: 1; font-size: 15px; font-weight: 600; color: var(--text-1); }
+        .btn-icon {
+          flex-shrink: 0; width: 34px; height: 34px;
+          border-radius: var(--radius-sm); border: 1px solid var(--border);
+          background: transparent; color: var(--text-2); cursor: pointer;
+          display: inline-flex; align-items: center; justify-content: center; font-size: 16px;
+        }
+        .topbar-badge {
+          font-size: 11px; font-family: var(--mono); padding: 3px 8px; border-radius: 20px;
+          background: var(--brand-light); color: var(--brand); border: 1px solid rgba(99,102,241,.18);
+        }
+
+        /* ── FILTER TOOLBAR ──────────────────────────────── */
+        .report-toolbar {
+          position: sticky; top: var(--topbar-h); z-index: 100;
+          background: var(--brand); border-bottom: 1px solid var(--brand-dark);
+          overflow: hidden;
+        }
+        .toolbar-summary { display: flex; align-items: center; gap: 10px; padding: 2px 4px; cursor: pointer; }
+        .toolbar-cal-icon {
+          width: 28px; height: 28px; border-radius: var(--radius-sm);
+          background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2);
+          display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px;
+        }
+        .toolbar-date-summary { flex: 1; font-size: 13px; font-weight: 600; color: #fff; }
+        .toolbar-date-summary span { font-size: 11px; font-weight: 400; color: rgba(255,255,255,.6); }
+
+        .btn-reload {
+          width: 32px; height: 32px; border-radius: var(--radius-sm);
+          border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.15);
+          color: #fff; display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn-reload.spinning svg { animation: spin .7s linear infinite; }
+
+        .toolbar-panel { max-height: 0; overflow: hidden; transition: max-height .28s ease; padding: 0 4px; }
+        .toolbar-panel.open { max-height: 200px; padding: 0 4px 4px; }
+        .toolbar-fields { display: flex; align-items: center; gap: 6px; padding-top: 2px; }
+        .toolbar-fields input[type="date"] {
+          flex: 1; height: 28px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,.22);
+          background: rgba(255,255,255,.12); color: #fff; font-size: 12px; color-scheme: dark; outline: none;
+        }
+
+        .toolbar-presets { display: flex; gap: 5px; flex-wrap: wrap; padding: 5px 0 4px; }
+        .preset-pill {
+          font-size: 11px; font-weight: 600; padding: 5px 14px; border-radius: 20px;
+          border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.12); color: rgba(255,255,255,.85);
+          cursor: pointer;
+        }
+        .preset-pill.active { background: rgba(255,255,255,.92); color: var(--brand); border-color: transparent; }
+
+        /* ── STAT STRIP ──────────────────────────────────── */
+        .stat-strip { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; padding: 4px 2px; }
+        .stat-chip {
+          display: flex; flex-direction: column; background: var(--surface);
+          border: 1px solid var(--border); border-radius: var(--radius-sm);
+          padding: 8px 10px; flex: 1; min-width: 100px;
+        }
+        .stat-chip__label { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px; }
+        .stat-chip__value { font-size: 14px; font-weight: 700; font-family: var(--mono); }
+
+        /* ── TABLE ───────────────────────────────────────── */
+        .screen-body { padding: 4px 2px 10px; }
+        .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead tr { background: var(--surface2); border-bottom: 2px solid var(--border); }
+        th { padding: 10px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-2); text-align: left; }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+
+        .acc-type-badge {
+            font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+            background: var(--surface2); border: 1px solid var(--border);
+        }
+        .val-positive { color: var(--income); }
+        .val-negative { color: var(--expense); }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="screen-topbar">
+    <button class="btn-icon" id="backBtn"><i class="fas fa-arrow-left"></i></button>
+    <h5 class="screen-title">Income Statement</h5>
+    <span class="topbar-badge" id="badge-count">0 accounts</span>
+</div>
+
+<div class="report-toolbar">
+    <div class="toolbar-summary" id="toolbar-summary">
+        <div class="toolbar-cal-icon">&#128200;</div>
+        <div class="toolbar-date-summary">
+            <span>From</span> <span id="summary-from">—</span>
+            &nbsp;&#8594;&nbsp;
+            <span>To</span> <span id="summary-to">—</span>
+        </div>
+        <button class="btn-reload" id="loadBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+    </div>
+    <div class="toolbar-panel" id="toolbar-panel">
+        <div class="toolbar-presets">
+            <button class="preset-pill" data-preset="today">Today</button>
+            <button class="preset-pill" data-preset="week">This Week</button>
+            <button class="preset-pill active" data-preset="mtd">Month to Date</button>
+        </div>
+        <div class="toolbar-fields">
+            <input type="date" id="tx-from" />
+            <input type="date" id="tx-to" />
+        </div>
+    </div>
+</div>
+
+<main class="screen-body">
+    <div class="stat-strip" id="stat-strip"></div>
+    <div class="table-card" id="reportContainer"></div>
+</main>
+
+<script>
+    ;(function () {
+        function fmt(v) {
+            return parseFloat(Math.abs(v || 0)).toLocaleString('en-US', { minimumFractionDigits: 2 });
+        }
+
+        function getPresetDates(preset) {
+            const now = new Date();
+            let start = new Date();
+            if (preset === 'week') {
+                const day = now.getDay();
+                start.setDate(now.getDate() - day + (day === 0 ? -6 : 1));
+            } else if (preset === 'mtd') {
+                start = new Date(now.getFullYear(), now.getMonth(), 1);
+            }
+            return { start: start.toISOString().slice(0,10), end: now.toISOString().slice(0,10) };
+        }
+
+        function renderStats(rows) {
+            const sums = { Income: 0, Expense: 0 };
+            rows.forEach(r => {
+                const val = parseFloat(r.badgeValues) || 0;
+                // Note: SQL 'net' for Income is Credits - Debits (Positive = Income)
+                // SQL 'net' for Expense is Credits - Debits (Negative = Expense cost)
+                if (r.badgeName === 'Income') sums.Income += val;
+                else sums.Expense += val;
+            });
+
+            const netProfit = sums.Income + sums.Expense; // Expenses are usually negative in this SQL logic
+
+            document.getElementById('stat-strip').innerHTML = `
+                <div class="stat-chip">
+                    <span class="stat-chip__label">Gross Revenue</span>
+                    <span class="stat-chip__value" style="color:var(--income)">${fmt(sums.Income)}</span>
+                </div>
+                <div class="stat-chip">
+                    <span class="stat-chip__label">Total Expenses</span>
+                    <span class="stat-chip__value" style="color:var(--expense)">${fmt(sums.Expense)}</span>
+                </div>
+                <div class="stat-chip" style="border-color:var(--brand)">
+                    <span class="stat-chip__label">Net Profit</span>
+                    <span class="stat-chip__value" style="color:var(--brand)">${fmt(netProfit)}</span>
+                </div>`;
+            document.getElementById('badge-count').textContent = `${rows.length} accounts`;
+        }
+
+        async function loadReport() {
+            const from = document.getElementById('tx-from').value;
+            const to = document.getElementById('tx-to').value;
+            const btn = document.getElementById('loadBtn');
+            btn.classList.add('spinning');
+
+            try {
+                const raw = await nativeApi.call('getIncomeStatement', { fromDate: from, toDate: to });
+                const rows = JSON.parse(raw || "[]");
+                renderStats(rows);
+
+                if (!rows.length) {
+                    document.getElementById('reportContainer').innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3)">No data for this period.</div>';
+                    return;
+                }
+
+                document.getElementById('reportContainer').innerHTML = `
+                    <table>
+                        <thead><tr><th>Account</th><th>Type</th><th style="text-align:right">Net</th></tr></thead>
+                        <tbody>
+                            ${rows.map(r => {
+                                const val = parseFloat(r.net || 0);
+                                const colorClass = val >= 0 ? 'val-positive' : 'val-negative';
+                                return `
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight:600;color:var(--text-1)">${r.name}</div>
+                                            <div style="font-size:10px;color:var(--text-3);font-family:var(--mono)">${r.code}</div>
+                                        </td>
+                                        <td><span class="acc-type-badge">${r.accountType}</span></td>
+                                        <td style="text-align:right;font-weight:700;font-family:var(--mono)" class="${colorClass}">
+                                            ${val < 0 ? '('+fmt(val)+')' : fmt(val)}
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>`;
+            } catch (e) { console.error(e); } finally { btn.classList.remove('spinning'); }
+        }
+
+        function init_report(params = {}) {
+            const mtd = getPresetDates('mtd');
+            document.getElementById('tx-from').value = params.start || mtd.start;
+            document.getElementById('tx-to').value = params.end || mtd.end;
+
+            const updateSummary = () => {
+                document.getElementById('summary-from').textContent = document.getElementById('tx-from').value;
+                document.getElementById('summary-to').textContent = document.getElementById('tx-to').value;
+            };
+            updateSummary();
+
+            document.getElementById('toolbar-summary').onclick = () => document.getElementById('toolbar-panel').classList.toggle('open');
+
+            document.querySelectorAll('.preset-pill').forEach(pill => {
+                pill.onclick = (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.preset-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    const range = getPresetDates(pill.dataset.preset);
+                    document.getElementById('tx-from').value = range.start;
+                    document.getElementById('tx-to').value = range.end;
+                    updateSummary();
+                    loadReport();
+                };
+            });
+
+            document.getElementById('tx-from').onchange = () => { updateSummary(); loadReport(); };
+            document.getElementById('tx-to').onchange = () => { updateSummary(); loadReport(); };
+            document.getElementById('backBtn').onclick = () => history.back();
+            document.getElementById('loadBtn').onclick = (e) => { e.stopPropagation(); loadReport(); };
+
+            loadReport();
+        }
+
+        window.init_income_statement = init_report;
+        document.addEventListener('DOMContentLoaded', () => init_report());
+    })();
+</script>
+</body>
+</html>

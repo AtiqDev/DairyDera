@@ -1,0 +1,334 @@
+<!-- Top Bar -->
+<div class="screen-topbar bg-light d-flex align-items-center">
+    <button class="btn btn-outline-secondary btn-icon me-3"
+            onclick="navigate()"
+            aria-label="Back">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="mb-0">Purchase Milk Inventory</h5>
+</div>
+
+<main class="screen-body">
+    <form id="purchase-form" novalidate>
+        <!-- Supplier & Date -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label for="supplier-select" class="form-label">Supplier <span class="text-danger">*</span></label>
+                <select id="supplier-select" class="form-select" required>
+                    <option value="">Select supplier</option>
+                </select>
+                <div class="invalid-feedback">Please select a supplier.</div>
+            </div>
+            <div class="col-md-6">
+                <label for="purchase-date" class="form-label">Date</label>
+                <input type="date" id="purchase-date" class="form-control" required/>
+                <div class="invalid-feedback">Enter a valid date.</div>
+            </div>
+        </div>
+
+        <!-- Items Card Grid -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Milk Lines</span>
+                <div>
+                    Total: <span id="grand-total" class="fw-bold">0.00</span>
+                </div>
+            </div>
+            <div class="card-body p-3">
+                <div id="staticItemsGrid" class="mb-3">
+                    <div id="staticItemsGridInner" class="d-flex flex-wrap gap-2"></div>
+                </div>
+
+                <button type="button" id="btnAddItem" class="btn btn-sm btn-outline-primary">
+                    Add Line
+                </button>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary" id="saveBtn" disabled>
+                Save Purchase
+            </button>
+        </div>
+    </form>
+</main>
+
+<!-- Popup: Add / Edit Item -->
+<div id="addItemPopup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:18px; border-radius:12px; width:420px; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+        <h6 id="popupTitle" class="mb-3 text-center">Add Milk Line</h6>
+
+        <div class="mb-2">
+            <label class="form-label">Product</label>
+            <select id="popupProductSelect" class="form-select"></select>
+        </div>
+
+        <div class="row g-2 mb-2">
+            <div class="col-6">
+                <label class="form-label">quantity</label>
+                <input type="number" id="popupQty" class="form-control" step="0.01" min="0.01" value="1" />
+            </div>
+            <div class="col-6">
+                <label class="form-label">price/UOM</label>
+                <input type="number" id="popupPrice" class="form-control" step="0.01" min="0" value="0" />
+            </div>
+        </div>
+
+        <div class="mb-2">
+            <label class="form-label">Unit</label>
+            <select id="popupUomSelect" class="form-select"></select>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <button id="popupCancel" class="btn btn-secondary btn-sm">Cancel</button>
+            <button id="popupSave" class="btn btn-success btn-sm">Save</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    #staticItemsGridInner > div {
+        cursor: pointer; min-width:200px; max-width:320px; transition: transform .08s ease;
+    }
+    #staticItemsGridInner > div.selected {
+        outline: 2px solid rgba(13,110,253,0.25); transform: translateY(-2px); box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
+    }
+    .remove-line {
+        position: absolute; top: 8px; right: 8px; width: 28px; height: 28px;
+        padding: 0; display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 6px; font-size: 14px;
+    }
+    .static-card { position: relative; padding-top: 8px; }
+</style>
+
+<script>
+    ;(function () {
+        'use strict';
+
+        let products = [], units = [], suppliers = [];
+        const staticInner = document.getElementById('staticItemsGridInner');
+        const addItemPopup = document.getElementById('addItemPopup');
+        const popupTitle = document.getElementById('popupTitle');
+        const popupProduct = document.getElementById('popupProductSelect');
+        const popupQty = document.getElementById('popupQty');
+        const popupPrice = document.getElementById('popupPrice');
+        const popupUom = document.getElementById('popupUomSelect');
+        const popupCancel = document.getElementById('popupCancel');
+        const popupSave = document.getElementById('popupSave');
+        let editCard = null;
+
+        // Safe bridge
+        async function safeBridge(fn, def = []) {
+            try {
+                const raw = await nativeApi.call(fn);
+                return raw ? JSON.parse(raw) : def;
+            } catch (e) {
+                console.error(`nativeApi.${fn} error:`, e);
+                return def;
+            }
+        }
+
+        // Init
+        async function init_purchase_asset() {
+            const today = new Date().toISOString().slice(0, 10);
+            document.getElementById('purchase-date').value = today;
+
+            suppliers = await safeBridge('getSuppliers');
+            products = await safeBridge('getAllProducts');
+            units = await safeBridge('getAllUnits');
+
+            const supSel = document.getElementById('supplier-select');
+            supSel.innerHTML = '<option value="">Select supplier</option>' +
+                suppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+            populateProductOptions();
+            populateUomOptions();
+            validateForm();
+        }
+
+        function populateProductOptions(selectedId) {
+            let html = '<option value="">Select Product</option>';
+            for (let p of products) {
+                const sel = selectedId === p.id ? ' selected' : '';
+                html += `<option value="${p.id}"${sel}>${escapeHtml(p.name)}</option>`;
+            }
+            popupProduct.innerHTML = html;
+        }
+
+        function populateUomOptions(selectedId) {
+            let html = '<option value="">Select Unit</option>';
+            for (let u of units) {
+                const sel = selectedId === u.id ? ' selected' : '';
+                html += `<option value="${u.id}"${sel}>${escapeHtml(u.name)}</option>`;
+            }
+            popupUom.innerHTML = html;
+        }
+
+        function escapeHtml(s) {
+            if (!s && s !== 0) return '';
+            return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        function computeTotal() {
+            const cards = Array.from(staticInner.children);
+            const total = cards.reduce((sum, c) => sum + (+c.dataset.lineTotal || 0), 0);
+            document.getElementById('grand-total').textContent = total.toFixed(2);
+        }
+
+        function validateForm() {
+            const form = document.getElementById('purchase-form');
+            const isValid = form.checkValidity() && staticInner.children.length > 0;
+            document.getElementById('saveBtn').disabled = !isValid;
+            return isValid;
+        }
+
+        // Open Add Popup
+        document.getElementById('btnAddItem').onclick = () => {
+            if (!document.getElementById('supplier-select').value) {
+                alert('Please select a supplier first.');
+                return;
+            }
+            editCard = null;
+            popupTitle.textContent = 'Add Milk Line';
+            populateProductOptions();
+            populateUomOptions();
+            popupQty.value = '1';
+            popupPrice.value = '0';
+            addItemPopup.style.display = 'flex';
+        };
+
+        // Close Popup
+        function closePopup() {
+            addItemPopup.style.display = 'none';
+            editCard = null;
+        }
+        popupCancel.onclick = closePopup;
+
+        // Save Item (Add or Edit)
+        popupSave.onclick = () => {
+            const productId = +popupProduct.value;
+            const qty = parseFloat(popupQty.value);
+            const price = parseFloat(popupPrice.value);
+            const uomId = +popupUom.value;
+
+            if (!productId) return alert('Select a product');
+            if (qty <= 0) return alert('quantity must be > 0');
+
+            const lineTotal = Math.round(qty * price * 100) / 100;
+
+            if (editCard) {
+                // Update
+                editCard.dataset.productId = productId;
+                editCard.dataset.qty = qty;
+                editCard.dataset.price = price;
+                editCard.dataset.uomId = uomId;
+                editCard.dataset.lineTotal = lineTotal;
+
+                const product = products.find(p => p.id === productId);
+                const unit = units.find(u => u.id === uomId);
+
+                editCard.querySelector('.card-title').textContent = product?.name || 'Unknown';
+                editCard.querySelector('.card-meta').textContent = `Qty: ${qty} • price: ${price} • Total: ${lineTotal.toFixed(2)}`;
+                editCard.querySelector('.card-unit').textContent = `Unit: ${unit?.name || ''}`;
+                editCard.classList.remove('selected');
+                editCard = null;
+            } else {
+                // Create
+                const product = products.find(p => p.id === productId);
+                const unit = units.find(u => u.id === uomId);
+
+                const card = document.createElement('div');
+                card.className = 'border rounded p-2 bg-white static-card';
+                card.innerHTML = `
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-line" aria-label="Remove">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <div class="fw-semibold card-title mb-1">${escapeHtml(product?.name || 'Unknown')}</div>
+                    <div class="small card-meta">Qty: ${qty} • price: ${price} • Total: ${lineTotal.toFixed(2)}</div>
+                    <div class="small text-muted card-unit">Unit: ${escapeHtml(unit?.name || '')}</div>
+                `;
+                card.dataset.productId = productId;
+                card.dataset.qty = qty;
+                card.dataset.price = price;
+                card.dataset.uomId = uomId;
+                card.dataset.lineTotal = lineTotal;
+
+                staticInner.appendChild(card);
+                attachCardEvents(card);
+            }
+
+            closePopup();
+            computeTotal();
+            validateForm();
+        };
+
+        // Attach click & remove
+        function attachCardEvents(card) {
+            const removeBtn = card.querySelector('.remove-line');
+            removeBtn.onclick = (e) => {
+                e.stopPropagation();
+                card.remove();
+                computeTotal();
+                validateForm();
+            };
+
+            card.onclick = (e) => {
+                if (e.target.closest('.remove-line')) return;
+                document.querySelectorAll('#staticItemsGridInner > div').forEach(c => {
+                    c.classList.remove('selected');
+                    c.style.boxShadow = '';
+                });
+                card.classList.add('selected');
+                editCard = card;
+
+                const productId = +card.dataset.productId;
+                const uomId = +card.dataset.uomId;
+                const qty = +card.dataset.qty;
+                const price = +card.dataset.price;
+
+                populateProductOptions(productId);
+                populateUomOptions(uomId);
+                popupQty.value = qty;
+                popupPrice.value = price;
+                popupTitle.textContent = 'Edit Milk Line';
+                addItemPopup.style.display = 'flex';
+            };
+        }
+
+        // Form Submit
+        document.getElementById('purchase-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            form.classList.add('was-validated');
+            if (!validateForm()) return;
+
+            if (!confirm('Save purchase?')) return;
+
+            const supplierId = +document.getElementById('supplier-select').value;
+            const date = document.getElementById('purchase-date').value;
+
+            const items = Array.from(staticInner.children).map(card => ({
+                product_id: +card.dataset.productId,
+                quantity: +card.dataset.qty,
+                uomId: +card.dataset.uomId,
+                price_per_uom: +card.dataset.price
+            }));
+
+            nativeApi.post('saveAssetPurchase', {
+                supplier_id: supplierId,
+                purchase_date: date,
+                items: items
+            });
+            navigate();
+        };
+
+        // Initial attach to existing cards (if any in future)
+        document.addEventListener('DOMContentLoaded', () => {
+            init_purchase_asset();
+            document.querySelectorAll('#staticItemsGridInner > div').forEach(attachCardEvents);
+        });
+
+        window.init_purchase_asset = init_purchase_asset;
+    })();
+</script>
