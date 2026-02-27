@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     private val account get() = db.account
     private val journal get() = db.journal
     private val financialReport get() = db.financialReport
+    private val modules get() = db.modules
 
 // In your MainActivity.kt or the class holding your WebView instance
 
@@ -279,6 +280,9 @@ class MainActivity : AppCompatActivity() {
                             "getTxnTypeMapping" -> account.getTxnTypeAccountMapping(payload!!.getInt("typeId"))
                             "getPurchase" -> procurement.getPurchase(payload!!.getInt("purchaseId"))
                             "getPurchaseItems" -> procurement.getPurchaseItems(payload!!.getInt("purchaseId"))
+                            "getApPaymentMethods" -> procurement.getApPaymentMethods()
+                            "getSuppliersWithOpenBalance" -> procurement.getSuppliersWithOpenBalance()
+                            "getOpenPayables" -> procurement.getOpenPayables(payload!!.getInt("supplierId"))
                             "getCustomerLocations" -> customer.getCustomerLocations(payload!!.getInt("customerId"))
                             "getCustomerPhotos" -> customer.getCustomerPhotos(payload!!.getInt("customerId"))
                             "isInvoiceExists" -> customer.isInvoiceExists(payload!!.getInt("customerId"), payload.getInt("monthId")).toString()
@@ -287,6 +291,14 @@ class MainActivity : AppCompatActivity() {
                             "getCustomerInvoiceDataString" -> customer.generateCustomerSalesInvoiceString(payload!!.getInt("customerId"), payload.getInt("monthId"))
                             "getCustomerOpenInvoices" -> customer.getCustomerOpenInvoices(payload!!.getInt("customerId")).let { JSONArray(it).toString() }
                             "getProfitAndLoss" -> financialReport.getProfitAndLoss(payload!!.getString("from"), payload.getString("to"))
+
+                            // --- Modules Registry ---
+                            "getModules"            -> modules.getModules()
+                            "getModuleDetail"       -> modules.getModuleDetail(payload!!.getInt("moduleId"))
+                            "getMappingsForTxnType" -> modules.getMappingsForTxnType(payload!!.getInt("txnTypeId"))
+                            "saveMapping"           -> modules.saveMapping(payload!!.toString())
+                            "deleteMapping"         -> modules.deleteMapping(payload!!.getInt("id"))
+                            "getUnmappedSummary"    -> modules.getUnmappedSummary()
 
                             // --- Actions (Save/Update/Delete) ---
                             "saveSyncSettings" -> db.saveSyncerSettings(payload!!.toString())
@@ -332,6 +344,7 @@ class MainActivity : AppCompatActivity() {
                             "deleteSupplier" -> procurement.deleteSupplier(payload!!.getInt("id"))
                             "deletePurchase" -> procurement.deletePurchase(payload!!.getInt("id"))
                             "saveAssetPurchase" -> procurement.saveAssetPurchase(payload!!.toString())
+                            "savePayablePayment" -> procurement.savePayablePayment(payload!!.toString())
                             "saveMilkProduction" -> production.saveMilkProduction(payload!!.toString())
                             "saveFuelExpense" -> expense.saveFuelExpense(payload!!.toString())
                             "saveLaborExpense" -> expense.saveLaborExpense(payload!!.toString())

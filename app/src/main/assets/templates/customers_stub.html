@@ -1,58 +1,31 @@
 <!-- File: templates/customers_stub.html -->
-<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
-    <button
-            type="button"
-            class="btn btn-outline-secondary btn-sm btn-icon me-2"
-            onclick="navigate('dashboard')"
-            aria-label="Back"
-            style="width: 32px; height: 32px; padding: 0;"
-    >
-        <i class="fas fa-arrow-circle-left"></i>
-    </button>
-    <h5 class="screen-title mb-0 flex-grow-1">Customers</h5>
+
+<div class="stub-topbar accent-sales">
+    <button class="stub-back" onclick="navigate('dashboard')"><i class="fas fa-arrow-left"></i></button>
+    <div class="stub-title">Customers</div>
     <div class="ConsoleLog"></div>
 </div>
 
-<div class="screen-body pt-2">
-    <div class="container py-3 bg-warning bg-opacity-25 min-vh-100">
-        <h4 class="mb-4">Customer Actions</h4>
+<div class="stub-body">
 
-        <div class="row text-center mb-5">
-            <!-- Manage Customers -->
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        style="cursor:pointer;"
-                        onclick="navigate('customers')"
-                >
-                    <i class="fas fa-users fa-2x text-warning"></i>
-                    <div class="mt-2 small text-dark">Manage</div>
-                </div>
-            </div>
+    <div class="stub-section-band accent-sales">Customers</div>
+    <div class="stub-grid">
 
-            <!-- Walkin Sale -->
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        style="cursor:pointer;"
-                        onclick="navigate('walkin')"
-                >
-                    <i class="fas fa-cash-register fa-2x text-warning"></i>
-                    <div class="mt-2 small text-dark">Walkin Sale</div>
-                </div>
-            </div>
-
-            <!-- 🧾 Invoices -->
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        style="cursor:pointer;"
-                        onclick="navigate('invoices')"
-                >
-                    <i class="fas fa-file-invoice-dollar fa-2x text-warning"></i>
-                    <div class="mt-2 small text-dark">Invoices</div>
-                </div>
-            </div>
+        <div class="stub-tile accent-sales" onclick="navigate('customers')">
+            <div class="stub-icon icon-sales"><i class="fas fa-users"></i></div>
+            <div class="stub-label">Manage</div>
         </div>
+
+        <div class="stub-tile accent-sales" onclick="navigate('walkin')">
+            <div class="stub-icon icon-sales"><i class="fas fa-cash-register"></i></div>
+            <div class="stub-label">Walkin Sale</div>
+        </div>
+
+        <div class="stub-tile accent-sales" onclick="navigate('invoices')">
+            <div class="stub-icon icon-sales"><i class="fas fa-file-invoice-dollar"></i></div>
+            <div class="stub-label">Invoices</div>
+        </div>
+
     </div>
+
 </div>
