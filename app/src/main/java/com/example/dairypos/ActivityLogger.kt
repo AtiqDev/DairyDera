@@ -1,6 +1,6 @@
 package com.example.dairypos
 
-import DatabaseHelper
+import com.example.dairypos.DatabaseHelper
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager

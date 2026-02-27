@@ -1,6 +1,6 @@
 package com.example.dairypos
 
-import DatabaseHelper
+import com.example.dairypos.DatabaseHelper
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Notification
