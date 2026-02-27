@@ -24,6 +24,36 @@
 
 ---
 
+## Frontend Assets
+
+The WebView frontend lives in:
+`app/src/main/assets/`
+
+Screen JS files follow the naming pattern `s{N}_{screenId}.js` where N is the domain section number:
+- `s0_` = Accounting (accounts, reports, journal)
+- `s1_` = Navigation stubs / dashboard
+- `s2_` = Purchasing & suppliers
+- `s3_` = Sales
+- `s4_` = Stock consumption
+- `s5_` = Customers & invoices
+- `s6_` = Payments
+- `s7_` = Milk production
+- `s8_` = Inventory settings (products, stock, UOMs)
+- `s9_` = Expenses
+- `s10_` = Query tool
+- `s11_` = Operational / sync
+
+Templates live in `assets/templates/`.
+
+**STRICT — NEVER read these large third-party library files. They are external dependencies with no project code:**
+- `app/src/main/assets/codemirror/` — entire folder (CodeMirror editor library)
+- `app/src/main/assets/css/awsomef.css` — FontAwesome icon library
+- `app/src/main/assets/css/bootstrap.css` — Bootstrap CSS framework
+
+Reading these files wastes context tokens and provides no useful project information.
+
+---
+
 ## Critical Code Conventions
 
 ### Extension Functions

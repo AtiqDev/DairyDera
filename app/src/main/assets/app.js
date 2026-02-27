@@ -18,7 +18,6 @@ const screenMap0 = {
   report_purchase_edit: 'report_purchase_edit.html',
 
   sync:   'sync.html',
-  errors: 'error_logs.html',
   sales_report:      'sales_report.html',
   trail_balance:    'trail_balance.html',
   balance_sheet:    'balance_sheet.html',
@@ -140,7 +139,6 @@ const bundledScreens = {
     'receive_payment':true,
     'mix_milk':true,
     'produce_milk':true,
-    'produce_rawmilk':true,
     'uoms':true,
     'products':true,
     'stock':true,
@@ -148,7 +146,26 @@ const bundledScreens = {
     'worker_expense':true,
     'account':true,
     'account_types':true,
-    'query':true
+    'query':true,
+    'inventory_stub':true,
+    'customers_stub':true,
+    'suppliers_stub':true,
+    'expense_stub':true,
+    'reports_stub':true,
+    'purchase_asset':true,
+    'purchase_report':true,
+    'report_purchase_edit':true,
+    'report_sale_edit':true,
+    'sales_report':true,
+    'walkin':true,
+    'transactions':true,
+    'trail_balance':true,
+    'balance_sheet':true,
+    'income_statement':true,
+    'cash_flow':true,
+    'journal_report':true,
+    'pl_report':true,
+    'sync':true
   };
 // Router: when hash changes, pull the right template
 function router() {
