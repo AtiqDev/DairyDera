@@ -39,7 +39,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private lateinit var photoUri: Uri
     private var photoCaptureCustomerId: Int = 0
-    private val dbHelper by lazy { DatabaseHelper(this) }
+
+    private val procurement get() = db.procurement
+    private val inventory get() = db.inventory
+    private val production get() = db.production
+    private val sales get() = db.sales
+    private val customer get() = db.customer
+    private val expense get() = db.expense
+    private val account get() = db.account
+    private val journal get() = db.journal
+    private val financialReport get() = db.financialReport
 
 // In your MainActivity.kt or the class holding your WebView instance
 
@@ -84,7 +93,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 val bytes = contentResolver.openInputStream(photoUri)?.readBytes()
                 if (bytes != null) {
-                    dbHelper.insertCustomerPhoto(photoCaptureCustomerId, bytes, "Captured")
+                    customer.insertCustomerPhoto(photoCaptureCustomerId, bytes, "Captured")
                     Toast.makeText(this, "Photo saved", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Failed to read photo data", Toast.LENGTH_SHORT).show()
@@ -224,129 +233,129 @@ class MainActivity : AppCompatActivity() {
                             // Simple parameter-less getters
                             "getClasses" -> db.getAllClasses()
                             "getSaleStatus" -> db.getAllStatus()
-                            "getSales" -> db.getAllSales()
+                            "getSales" -> sales.getAllSales()
                             "getSyncSettings" -> db.getSyncerSettings()
                             "getTableNames" -> db.getTableNames()
-                            "getPurchaseStatus" -> db.getPurchaseStatus()
-                            "getPurchases" -> db.getPurchases()
-                            "getSuppliers" -> db.getSuppliers()
-                            "getSuppliersSearch" -> db.getSuppliersSearch(payload!!.getString("term"))
-                            "getAllUnits" -> db.getAllUnits()
-                            "receiveStock" -> db.receiveStock()
-                            "getWorkers" -> db.getWorkers()
-                            "saveMilkMix" -> db.saveMix()
-                            "getMilkSummary" -> db.getMilkSummary()
-                            "getOpenInvoices" -> db.getOpenInvoices()
-                            "getPaidInvoices" -> db.getPaidInvoices()
-                            "getAccountTypes" -> db.getAllAccountTypes()
-                            "getAccounts" -> db.getAllAccounts()
-                            "getAllConversions" -> db.getAllConversions()
-                            "getAllProducts" -> db.getAllProducts()
-                            "getCustomerSalesSummariesThisMonth" -> db.getCustomerSalesSummariesThisMonth()
-                            "getCustomers" -> db.getAllCustomers()
-                            "getSupplierPurchaseSummariesThisMonth" -> db.getSupplierPurchaseSummariesThisMonth()
-                            "getRawStockSummary" -> db.getRawStockSummary()
-                            "getSellableProducts" -> db.getSellableProducts()
-                            "getStockSummary" -> db.getStockSummary()
-                            "getSalesPerMonthToDate" -> db.getSalesPerMonthToDate()
+                            "getPurchaseStatus" -> procurement.getPurchaseStatus()
+                            "getPurchases" -> procurement.getPurchases()
+                            "getSuppliers" -> procurement.getSuppliers()
+                            "getSuppliersSearch" -> procurement.getSuppliersSearch(payload!!.getString("term"))
+                            "getAllUnits" -> inventory.getAllUnits()
+                            "receiveStock" -> procurement.receiveStock()
+                            "getWorkers" -> expense.getWorkers()
+                            "saveMilkMix" -> production.saveMix()
+                            "getMilkSummary" -> production.getMilkSummary()
+                            "getOpenInvoices" -> customer.getOpenInvoices()
+                            "getPaidInvoices" -> customer.getPaidInvoices()
+                            "getAccountTypes" -> account.getAllAccountTypes()
+                            "getAccounts" -> account.getAllAccounts()
+                            "getAllConversions" -> inventory.getAllConversions()
+                            "getAllProducts" -> inventory.getAllProducts()
+                            "getCustomerSalesSummariesThisMonth" -> sales.getCustomerSalesSummariesThisMonth()
+                            "getCustomers" -> customer.getAllCustomers()
+                            "getSupplierPurchaseSummariesThisMonth" -> procurement.getSupplierPurchaseSummariesThisMonth()
+                            "getRawStockSummary" -> inventory.getRawStockSummary()
+                            "getSellableProducts" -> inventory.getSellableProducts()
+                            "getStockSummary" -> inventory.getStockSummary()
+                            "getSalesPerMonthToDate" -> sales.getSalesPerMonthToDate()
 
                             // Getters with parameters
-                            "getSaleReport" -> db.getSaleReport(payload!!.getString("start"), payload.getString("end"))
+                            "getSaleReport" -> sales.getSaleReport(payload!!.getString("start"), payload.getString("end"))
                             "executeQuery" -> db.executeRawQuery(payload!!.getString("sql"))
-                            "queryPurchaseByDateReport" -> db.queryPurchaseByDateReport(payload!!.getString("start"), payload.getString("end"))
-                            "getSupplierItems" -> db.getSupplierItems(payload!!.getInt("supplierId"))
-                            "getProductBaseUnit" -> db.getProductBaseUnit(payload!!.getString("productId"))
-                            "getStock" -> db.getStock(payload!!.getString("productId"), payload.getString("unitId"))
-                            "getProduct" -> db.getProduct(payload!!.getString("id"))
-                            "getConversion" -> db.getConversion(payload!!.getString("fromUnit"), payload.getString("toUnit"))
-                            "getAccountType" -> db.getAccountTypeById(payload!!.getInt("id"))
-                            "getTrialBalance" -> db.getTrialBalance()
-                            "getBalanceSheet" -> db.getBalanceSheet(payload!!.getString("asOfDate"))
-                            "getIncomeStatement" -> db.getIncomeStatement(payload!!.getString("fromDate"), payload.getString("toDate"))
-                            "getJournalEntryReport" -> db.getJournalEntryReport(payload!!.getString("fromDate"), payload.getString("toDate"))
-                            "getTransactionReport" -> db.getTransactionReport(payload!!.getString("fromDate"), payload.getString("toDate"))
-                            "getCashFlow" -> db.getCashFlow(payload!!.getString("fromDate"), payload.getString("toDate"))
-                            "searchCustomers" -> db.searchCustomers(payload!!.getString("query"), payload.optString("classIdStr").toIntOrNull())
-                            "getTxnTypeMapping" -> db.getTxnTypeAccountMapping(payload!!.getInt("typeId"))
-                            "getPurchase" -> db.getPurchase(payload!!.getInt("purchaseId"))
-                            "getPurchaseItems" -> db.getPurchaseItems(payload!!.getInt("purchaseId"))
-                            "getCustomerLocations" -> db.getCustomerLocations(payload!!.getInt("customerId"))
-                            "getCustomerPhotos" -> db.getCustomerPhotos(payload!!.getInt("customerId"))
-                            "isInvoiceExists" -> db.isInvoiceExists(payload!!.getInt("customerId"), payload.getInt("monthId")).toString()
-                            "getInvoiceDetails" -> db.getInvoiceDetails(payload!!.getInt("invoiceId"))
-                            "getCustomerOpenPayments" -> db.getCustomerOpenPayments(payload!!.getString("customerId"))
-                            "getCustomerInvoiceDataString" -> db.generateCustomerSalesInvoiceString(payload!!.getInt("customerId"), payload.getInt("monthId"))
-                            "getCustomerOpenInvoices" -> db.getCustomerOpenInvoices(payload!!.getInt("customerId")).let { JSONArray(it).toString() }
-                            "getProfitAndLoss" -> db.getProfitAndLoss(payload!!.getString("from"), payload.getString("to"))
+                            "queryPurchaseByDateReport" -> procurement.queryPurchaseByDateReport(payload!!.getString("start"), payload.getString("end"))
+                            "getSupplierItems" -> procurement.getSupplierItems(payload!!.getInt("supplierId"))
+                            "getProductBaseUnit" -> inventory.getProductBaseUnit(payload!!.getString("productId"))
+                            "getStock" -> inventory.getStock(payload!!.getString("productId"), payload.getString("unitId"))
+                            "getProduct" -> inventory.getProduct(payload!!.getString("id"))
+                            "getConversion" -> inventory.getConversion(payload!!.getString("fromUnit"), payload.getString("toUnit"))
+                            "getAccountType" -> account.getAccountTypeById(payload!!.getInt("id"))
+                            "getTrialBalance" -> financialReport.getTrialBalance()
+                            "getBalanceSheet" -> financialReport.getBalanceSheet(payload!!.getString("asOfDate"))
+                            "getIncomeStatement" -> financialReport.getIncomeStatement(payload!!.getString("fromDate"), payload.getString("toDate"))
+                            "getJournalEntryReport" -> financialReport.getJournalEntryReport(payload!!.getString("fromDate"), payload.getString("toDate"))
+                            "getTransactionReport" -> financialReport.getTransactionReport(payload!!.getString("fromDate"), payload.getString("toDate"))
+                            "getCashFlow" -> financialReport.getCashFlow(payload!!.getString("fromDate"), payload.getString("toDate"))
+                            "searchCustomers" -> customer.searchCustomers(payload!!.getString("query"), payload.optString("classIdStr").toIntOrNull())
+                            "getTxnTypeMapping" -> account.getTxnTypeAccountMapping(payload!!.getInt("typeId"))
+                            "getPurchase" -> procurement.getPurchase(payload!!.getInt("purchaseId"))
+                            "getPurchaseItems" -> procurement.getPurchaseItems(payload!!.getInt("purchaseId"))
+                            "getCustomerLocations" -> customer.getCustomerLocations(payload!!.getInt("customerId"))
+                            "getCustomerPhotos" -> customer.getCustomerPhotos(payload!!.getInt("customerId"))
+                            "isInvoiceExists" -> customer.isInvoiceExists(payload!!.getInt("customerId"), payload.getInt("monthId")).toString()
+                            "getInvoiceDetails" -> customer.getInvoiceDetails(payload!!.getInt("invoiceId"))
+                            "getCustomerOpenPayments" -> customer.getCustomerOpenPayments(payload!!.getString("customerId"))
+                            "getCustomerInvoiceDataString" -> customer.generateCustomerSalesInvoiceString(payload!!.getInt("customerId"), payload.getInt("monthId"))
+                            "getCustomerOpenInvoices" -> customer.getCustomerOpenInvoices(payload!!.getInt("customerId")).let { JSONArray(it).toString() }
+                            "getProfitAndLoss" -> financialReport.getProfitAndLoss(payload!!.getString("from"), payload.getString("to"))
 
                             // --- Actions (Save/Update/Delete) ---
                             "saveSyncSettings" -> db.saveSyncerSettings(payload!!.toString())
-                            "savePurchase" -> db.savePurchase(payload!!.toString())
-                            "saveSupplierItems" -> db.saveSupplierItems(payload!!.toString())
-                            "saveSale" -> db.saveSale(payload!!.toString())
-                            "saveUnit" -> db.saveUnit(payload!!.toString())
-                            "saveSupplier" -> db.saveSupplier(payload!!.toString())
-                            "saveCustomer" -> db.saveCustomer(payload!!.toString())
-                            "saveStock" -> db.saveStock(payload!!.toString())
+                            "savePurchase" -> procurement.savePurchase(payload!!.toString())
+                            "saveSupplierItems" -> procurement.saveSupplierItems(payload!!.toString())
+                            "saveSale" -> sales.saveSale(payload!!.toString())
+                            "saveUnit" -> inventory.saveUnit(payload!!.toString())
+                            "saveSupplier" -> procurement.saveSupplier(payload!!.toString())
+                            "saveCustomer" -> customer.saveCustomer(payload!!.toString())
+                            "saveStock" -> inventory.saveStock(payload!!.toString())
                             "saveStockPlain" -> {
                                 val obj = payload!!
                                 val pid = obj.getInt("productId")
-                                db.saveStockPlain(pid, obj.getDouble("quantity"), obj.getInt("unitId"))
+                                inventory.saveStockPlain(pid, obj.getDouble("quantity"), obj.getInt("unitId"))
                                 logAction("STOCK_UPDATED", "Stock", pid)
                                 "OK"
                             }
                             "saveTransaction" -> db.saveTransaction(payload!!.toString())
-                            "saveProduct" -> db.saveProduct(payload!!.toString())
+                            "saveProduct" -> inventory.saveProduct(payload!!.toString())
                             "deleteProduct" -> {
                                 val id = payload!!.getInt("id")
-                                db.deleteProduct(id)
+                                inventory.deleteProduct(id)
                                 logAction("PRODUCT_DELETED", "Product", id)
                                 "OK"
                             }
-                            "saveConsumption" -> db.saveConsumption(payload!!.toString())
-                            "saveConversion" -> db.saveConversion(payload!!.toString())
-                            "saveAccountType" -> db.saveAccountType(payload!!.toString())
-                            "deleteAccountType" -> db.deleteAccountType(payload!!.getInt("id"))
-                            "saveJournalEntry" -> db.saveJournalEntry(payload!!.toString())
-                            "saveAccount" -> db.saveAccount(payload!!.toString())
+                            "saveConsumption" -> inventory.saveConsumption(payload!!.toString())
+                            "saveConversion" -> inventory.saveConversion(payload!!.toString())
+                            "saveAccountType" -> account.saveAccountType(payload!!.toString())
+                            "deleteAccountType" -> account.deleteAccountType(payload!!.getInt("id"))
+                            "saveJournalEntry" -> journal.saveJournalEntry(payload!!.toString())
+                            "saveAccount" -> account.saveAccount(payload!!.toString())
                             "deleteAccount" -> {
                                 val id = payload!!.getInt("id")
-                                db.deleteAccount(id)
+                                account.deleteAccount(id)
                                 logAction("ACCOUNT_DELETED", "Account", id)
                                 "OK"
                             }
                             "deleteConversion" -> {
-                                db.deleteConversion(payload!!.getInt("id"))
+                                inventory.deleteConversion(payload!!.getInt("id"))
                                 "OK"
                             }
-                            "deleteUnit" -> db.deleteUnit(payload!!.getInt("unitId"))
-                            "deleteSupplier" -> db.deleteSupplier(payload!!.getInt("id"))
-                            "deletePurchase" -> db.deletePurchase(payload!!.getInt("id"))
-                            "saveAssetPurchase" -> db.saveAssetPurchase(payload!!.toString())
-                            "saveMilkProduction" -> db.saveMilkProduction(payload!!.toString())
-                            "saveFuelExpense" -> db.saveFuelExpense(payload!!.toString())
-                            "saveLaborExpense" -> db.saveLaborExpense(payload!!.toString())
+                            "deleteUnit" -> inventory.deleteUnit(payload!!.getInt("unitId"))
+                            "deleteSupplier" -> procurement.deleteSupplier(payload!!.getInt("id"))
+                            "deletePurchase" -> procurement.deletePurchase(payload!!.getInt("id"))
+                            "saveAssetPurchase" -> procurement.saveAssetPurchase(payload!!.toString())
+                            "saveMilkProduction" -> production.saveMilkProduction(payload!!.toString())
+                            "saveFuelExpense" -> expense.saveFuelExpense(payload!!.toString())
+                            "saveLaborExpense" -> expense.saveLaborExpense(payload!!.toString())
                             "recalibrateStock" -> {
-                                db.recalculateAllStock()
+                                inventory.recalculateAllStock()
                                 logAction("STOCK_RECALIBRATED", "System")
                                 "OK"
                             }
                             "deleteCustomerLocation" -> {
-                                db.deleteCustomerLocation(payload!!.getInt("id"))
+                                customer.deleteCustomerLocation(payload!!.getInt("id"))
                                 logAction("CUSTOMER_LOCATION_DELETED", "Customer", payload.getInt("id"))
                                 "OK"
                             }
                             "deleteCustomerPhoto" -> {
-                                db.deleteCustomerPhoto(payload!!.getInt("id"))
+                                customer.deleteCustomerPhoto(payload!!.getInt("id"))
                                 logAction("CUSTOMER_PHOTO_DELETED", "Customer", payload.getInt("id"))
                                 "OK"
                             }
                             "updateLatLon" -> {
-                                db.updateCustomerLatLon(payload!!.getInt("id"), payload.getDouble("lat"), payload.getDouble("lon"))
+                                customer.updateCustomerLatLon(payload!!.getInt("id"), payload.getDouble("lat"), payload.getDouble("lon"))
                                 "OK"
                             }
                             "updateMapUrl" -> {
-                                db.updateMapUrl(payload!!.getInt("id"), payload.getString("url"))
+                                customer.updateMapUrl(payload!!.getInt("id"), payload.getString("url"))
                                 "OK"
                             }
                             "receivePayment" -> {
@@ -354,7 +363,7 @@ class MainActivity : AppCompatActivity() {
                                  val customerId = obj.getInt("customerId")
                                  val amount = obj.getDouble("amount")
                                  val notes = obj.optString("notes", "")
-                                 val paymentId = db.receiveCustomerPayment(customerId, amount, notes)
+                                 val paymentId = customer.receiveCustomerPayment(customerId, amount, notes)
                                  JSONObject().apply {
                                      put("success", true)
                                      put("paymentId", paymentId)
@@ -460,7 +469,7 @@ class MainActivity : AppCompatActivity() {
                     val lat = location.latitude
                     val lon = location.longitude
                     val acc = location.accuracy.toDouble()
-                    db.insertCustomerLocation(customerId, lat, lon, acc)
+                    customer.insertCustomerLocation(customerId, lat, lon, acc)
                     Toast.makeText(
                         this@MainActivity,
                         "Location saved (±${acc.toInt()}m): $lat,$lon",
