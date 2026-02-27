@@ -40,6 +40,10 @@ async function loadScreenBundled(screenId, params = {}) {
     const html = await resp.text();
     const app = document.getElementById('app');
     app.innerHTML = html;
+    // Trigger slide-in animation on every screen load
+    app.classList.remove('screen-enter');
+    void app.offsetWidth; // force reflow so animation restarts
+    app.classList.add('screen-enter');
     console.log(`[Router] Injected template for ${screenId}`);
 
     initInPageLogPanel(screenId);
@@ -154,6 +158,7 @@ const bundledScreens = {
     'reports_stub':true,
     'purchase_asset':true,
     'purchase_report':true,
+    'ap_payment':true,
     'report_purchase_edit':true,
     'report_sale_edit':true,
     'sales_report':true,
@@ -165,6 +170,8 @@ const bundledScreens = {
     'cash_flow':true,
     'journal_report':true,
     'pl_report':true,
+    'modules_registry':true,
+    'admin_stub':true,
     'sync':true
   };
 // Router: when hash changes, pull the right template
@@ -202,5 +209,8 @@ window.onerror = function(message, source, lineno, colno, error) {
 
 window.addEventListener('hashchange', router);
 window.addEventListener('DOMContentLoaded', () => {
-   router();
+  // Sync --header-height to actual rendered header so all sticky topbars align correctly
+  const hdr = document.querySelector('header');
+  if (hdr) document.documentElement.style.setProperty('--header-height', hdr.offsetHeight + 'px');
+  router();
 });

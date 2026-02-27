@@ -1,117 +1,66 @@
 <!-- File: templates/reports_stub.html -->
-<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
-    <button
-            type="button"
-            class="btn btn-outline-secondary btn-sm btn-icon me-2"
-            onclick="navigate('dashboard')"
-            aria-label="Back"
-            style="width: 32px; height: 32px; padding: 0;"
-    >
-        <i class="fas fa-arrow-circle-left"></i>
-    </button>
-    <h5 class="screen-title mb-0 flex-grow-1">Financial Reports</h5>
+
+<div class="stub-topbar accent-reports">
+    <button class="stub-back" onclick="navigate('dashboard')"><i class="fas fa-arrow-left"></i></button>
+    <div class="stub-title">Reports</div>
+    <div class="ConsoleLog"></div>
 </div>
 
-<div class="screen-body py-3 bg-info bg-opacity-25 min-vh-100">
-    <h4 class="mb-4">Reports</h4>
-    <div class="row g-3 text-center">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('trail_balance')"
-            >
-                <i class="fas fa-balance-scale fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Trial Balance</div>
-            </div>
+<div class="stub-body">
+
+    <div class="stub-section-band accent-reports">Financial</div>
+    <div class="stub-grid">
+
+        <div class="stub-tile accent-reports" onclick="navigate('trail_balance')">
+            <div class="stub-icon icon-reports"><i class="fas fa-balance-scale"></i></div>
+            <div class="stub-label">Trial Balance</div>
         </div>
 
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('balance_sheet')"
-            >
-                <i class="fas fa-building-columns fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Balance Sheet</div>
-            </div>
+        <div class="stub-tile accent-reports" onclick="navigate('balance_sheet')">
+            <div class="stub-icon icon-reports"><i class="fas fa-file-contract"></i></div>
+            <div class="stub-label">Balance Sheet</div>
         </div>
 
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('income_statement')"
-            >
-                <i class="fas fa-chart-line fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Income Statement</div>
-            </div>
+        <div class="stub-tile accent-reports" onclick="navigate('income_statement')">
+            <div class="stub-icon icon-reports"><i class="fas fa-chart-line"></i></div>
+            <div class="stub-label">Income Statement</div>
         </div>
 
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('cash_flow')"
-            >
-                <i class="fas fa-wallet fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Cash Flow</div>
-            </div>
-        </div>
-
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('sales_report')"
-            >
-                <i class="fas fa-receipt fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Sale Report</div>
-            </div>
-        </div>
-
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('purchase_report')"
-            >
-                <i class="fas fa-file-invoice fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Purchase Report</div>
-            </div>
-        </div>
-
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('transactions')"
-            >
-                <i class="fas fa-exchange-alt fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Transactions</div>
-            </div>
-        </div>
-
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('journal_report')"
-            >
-                <i class="fas fa-exchange-alt fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Journal Report</div>
-            </div>
-        </div>
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('customer_invoice')"
-            >
-                <i class="fas fa-exchange-alt fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Customer Invoice</div>
-            </div>
+        <div class="stub-tile accent-reports" onclick="navigate('cash_flow')">
+            <div class="stub-icon icon-reports"><i class="fas fa-wallet"></i></div>
+            <div class="stub-label">Cash Flow</div>
         </div>
 
     </div>
+
+    <div class="stub-section-band accent-reports">Operations</div>
+    <div class="stub-grid">
+
+        <div class="stub-tile accent-reports" onclick="navigate('sales_report')">
+            <div class="stub-icon icon-sales"><i class="fas fa-receipt"></i></div>
+            <div class="stub-label">Sales Report</div>
+        </div>
+
+        <div class="stub-tile accent-reports" onclick="navigate('purchase_report')">
+            <div class="stub-icon icon-purchase"><i class="fas fa-file-invoice"></i></div>
+            <div class="stub-label">Purchase Report</div>
+        </div>
+
+        <div class="stub-tile accent-reports" onclick="navigate('transactions')">
+            <div class="stub-icon icon-system"><i class="fas fa-exchange-alt"></i></div>
+            <div class="stub-label">Transactions</div>
+        </div>
+
+        <div class="stub-tile accent-reports" onclick="navigate('journal_report')">
+            <div class="stub-icon icon-reports"><i class="fas fa-book"></i></div>
+            <div class="stub-label">Journal Report</div>
+        </div>
+
+        <div class="stub-tile accent-reports" onclick="navigate('customer_invoice')">
+            <div class="stub-icon icon-sales"><i class="fas fa-file-invoice-dollar"></i></div>
+            <div class="stub-label">Customer Invoice</div>
+        </div>
+
+    </div>
+
 </div>

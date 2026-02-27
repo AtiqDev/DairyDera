@@ -35,6 +35,7 @@ import com.example.dairypos.data.repository.erp.ExpenseRepository
 import com.example.dairypos.data.repository.accounting.AccountRepository
 import com.example.dairypos.data.repository.accounting.JournalRepository
 import com.example.dairypos.data.repository.accounting.FinancialReportRepository
+import com.example.dairypos.data.repository.accounting.ModulesRepository
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
@@ -49,10 +50,11 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
     val account by lazy { AccountRepository(this) }
     val journal by lazy { JournalRepository(this) }
     val financialReport by lazy { FinancialReportRepository(this) }
+    val modules by lazy { ModulesRepository(this) }
 
     companion object {
         internal const val DB_NAME = "DairyFarmPOS.db"
-        internal const val DB_VERSION = 1
+        internal const val DB_VERSION = 2
 
         internal const val T_CLASSES = "classes"
         internal const val T_CATEGORY = "categories"
@@ -80,6 +82,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
         internal const val T_ACCOUNTS = "chartAccounts"
         internal const val T_JOURNAL = "journalEntries"
         internal const val T_DAILY_RENTAL_ALLOCATION = "dailyRentalAllocation"
+        internal const val T_MODULES = "modulesRegistry"
 
     }
 
@@ -290,6 +293,28 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
             );
             """.trimIndent(),
             "paymentApplied"
+        )
+
+        safeExec(
+            "CREATE TABLE apPaymentMethods (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE);",
+            "apPaymentMethods"
+        )
+
+        safeExec(
+            """
+            CREATE TABLE payablePayment (
+              id              INTEGER PRIMARY KEY AUTOINCREMENT,
+              supplierId      INTEGER NOT NULL,
+              paymentDate     TEXT    NOT NULL,
+              amount          REAL    NOT NULL,
+              paymentMethodId INTEGER NOT NULL,
+              notes           TEXT,
+              createDate      TEXT,
+              FOREIGN KEY(supplierId)      REFERENCES suppliers(id),
+              FOREIGN KEY(paymentMethodId) REFERENCES apPaymentMethods(id)
+            );
+            """.trimIndent(),
+            "payablePayment"
         )
 
         safeExec(
@@ -669,10 +694,42 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
             T_PURCHASE_ITEMS
         )
 
+        safeExec(
+            """
+            CREATE TABLE modulesRegistry (
+              id   INTEGER PRIMARY KEY AUTOINCREMENT,
+              name TEXT    NOT NULL UNIQUE
+            )
+            """.trimIndent(),
+            T_MODULES
+        )
+
         seedDefaults(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        if (oldVersion < 2) {
+            db.execSQL(
+                """
+                CREATE TABLE IF NOT EXISTS modulesRegistry (
+                  id   INTEGER PRIMARY KEY AUTOINCREMENT,
+                  name TEXT    NOT NULL UNIQUE
+                )
+                """.trimIndent()
+            )
+            db.execSQL(
+                """
+                INSERT OR IGNORE INTO modulesRegistry (name) VALUES
+                  ('Procurement'), ('Sales'), ('Production'), ('Expenses')
+                """.trimIndent()
+            )
+            db.execSQL("ALTER TABLE TransactionTypes ADD COLUMN moduleId INTEGER REFERENCES modulesRegistry(id)")
+            db.execSQL("UPDATE TransactionTypes SET moduleId=(SELECT id FROM modulesRegistry WHERE name='Procurement') WHERE name IN ('Purchase','PayablePayment')")
+            db.execSQL("UPDATE TransactionTypes SET moduleId=(SELECT id FROM modulesRegistry WHERE name='Sales') WHERE name IN ('Sale','BatchSoldCogs','Invoice','ReceivePayment')")
+            db.execSQL("UPDATE TransactionTypes SET moduleId=(SELECT id FROM modulesRegistry WHERE name='Production') WHERE name IN ('Production','Mix','FeedUse','ProductionExpense')")
+            db.execSQL("UPDATE TransactionTypes SET moduleId=(SELECT id FROM modulesRegistry WHERE name='Expenses') WHERE name IN ('Expense')")
+            return
+        }
         db.execSQL("DROP TABLE IF EXISTS ErrorLog")
         db.execSQL("DROP TABLE IF EXISTS $T_UOMS")
         db.execSQL("DROP TABLE IF EXISTS $T_PRODUCTS")
@@ -750,8 +807,9 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
             db.execSQL(
                 """
             CREATE TABLE IF NOT EXISTS TransactionTypes (
-              id   INTEGER PRIMARY KEY AUTOINCREMENT,
-              name TEXT NOT NULL UNIQUE
+              id       INTEGER PRIMARY KEY AUTOINCREMENT,
+              name     TEXT    NOT NULL UNIQUE,
+              moduleId INTEGER REFERENCES modulesRegistry(id)
             );
         """.trimIndent()
             )
@@ -774,6 +832,17 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
               ('ReceivePayment');
         """.trimIndent()
             )
+
+            db.execSQL(
+                """
+                INSERT OR IGNORE INTO modulesRegistry (name) VALUES
+                  ('Procurement'), ('Sales'), ('Production'), ('Expenses')
+                """.trimIndent()
+            )
+            db.execSQL("UPDATE TransactionTypes SET moduleId=(SELECT id FROM modulesRegistry WHERE name='Procurement') WHERE name IN ('Purchase','PayablePayment')")
+            db.execSQL("UPDATE TransactionTypes SET moduleId=(SELECT id FROM modulesRegistry WHERE name='Sales') WHERE name IN ('Sale','BatchSoldCogs','Invoice','ReceivePayment')")
+            db.execSQL("UPDATE TransactionTypes SET moduleId=(SELECT id FROM modulesRegistry WHERE name='Production') WHERE name IN ('Production','Mix','FeedUse','ProductionExpense')")
+            db.execSQL("UPDATE TransactionTypes SET moduleId=(SELECT id FROM modulesRegistry WHERE name='Expenses') WHERE name IN ('Expense')")
 
             db.execSQL(
                 """
@@ -805,6 +874,13 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
                 ('Stocked'),('Sellable'),('Sold')
 
         """
+            )
+            db.execSQL(
+                """
+            INSERT OR IGNORE INTO apPaymentMethods (name) VALUES
+                ('Cash'),
+                ('Bank')
+            """.trimIndent()
             )
             db.execSQL(
                 """
@@ -898,7 +974,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
               ('6002', 'Utility Expense', 1, (SELECT id FROM StandardAccountTypes WHERE name='Expense')),
               ('1012', 'WIP Inventory', 0, (SELECT id FROM StandardAccountTypes WHERE name='Asset')),
               ('5004', 'Production Overhead', 1, (SELECT id FROM StandardAccountTypes WHERE name='Expense')),
-              ('7001', 'Vet Expense', 1, (SELECT id FROM StandardAccountTypes WHERE name='Expense'));
+              ('7001', 'Vet Expense', 1, (SELECT id FROM StandardAccountTypes WHERE name='Expense')),
+              ('1003', 'Bank',        1, (SELECT id FROM StandardAccountTypes WHERE name='Asset'));
         """.trimIndent()
             )
 
@@ -907,14 +984,12 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
                 INSERT INTO accountingJournalsMap (transactionTypeId, subType, debitAccountId, creditAccountId, sequence) VALUES
                   ((SELECT id FROM transactionTypes WHERE name='Purchase'),'Consumable',
                    (SELECT id FROM chartAccounts WHERE code='1001'), (SELECT id FROM chartAccounts WHERE code='2000'), 1),
-                  ((SELECT id FROM transactionTypes WHERE name='Purchase'),'Consumable',
-                   (SELECT id FROM chartAccounts WHERE code='2000'), (SELECT id FROM chartAccounts WHERE code='1000'), 2),
                   ((SELECT id FROM transactionTypes WHERE name='Purchase'),'Raw',
                    (SELECT id FROM chartAccounts WHERE code='1010'), (SELECT id FROM chartAccounts WHERE code='2000'), 1),
-                  ((SELECT id FROM transactionTypes WHERE name='Purchase'),'Raw',
-                   (SELECT id FROM chartAccounts WHERE code='2000'), (SELECT id FROM chartAccounts WHERE code='1000'), 2),
-                  ((SELECT id FROM transactionTypes WHERE name='PayablePayment'),NULL,
+                  ((SELECT id FROM transactionTypes WHERE name='PayablePayment'),'Cash',
                    (SELECT id FROM chartAccounts WHERE code='2000'), (SELECT id FROM chartAccounts WHERE code='1000'), 1),
+                  ((SELECT id FROM transactionTypes WHERE name='PayablePayment'),'Bank',
+                   (SELECT id FROM chartAccounts WHERE code='2000'), (SELECT id FROM chartAccounts WHERE code='1003'), 1),
                   ((SELECT id FROM transactionTypes WHERE name='FeedUse'),NULL,
                    (SELECT id FROM chartAccounts WHERE code='1015'), (SELECT id FROM chartAccounts WHERE code='1001'), 1),
                   ((SELECT id FROM transactionTypes WHERE name='Production'),NULL,

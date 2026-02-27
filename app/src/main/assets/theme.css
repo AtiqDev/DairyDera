@@ -69,7 +69,7 @@ header {
 /* Top bar (page title + back button) */
 .screen-topbar {
   position: sticky;
-  top: 41px;
+  top: var(--header-height, 41px);
   height: 40px;
   background: var(--mint);
   border-bottom: 1px solid var(--mint-teal);
@@ -208,3 +208,12 @@ a, div[role="button"], .btn, .nav-card {
 .shadow-sm { box-shadow: 0 2px 4px var(--shadow) !important; }
 .shadow-md { box-shadow: 0 3px 6px var(--shadow) !important; }
 .shadow-lg { box-shadow: 0 6px 10px var(--shadow) !important; }
+
+/* Screen transition — slides up slightly + fades in on every navigation */
+@keyframes screenSlideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#app.screen-enter {
+  animation: screenSlideIn 0.22s ease-out forwards;
+}

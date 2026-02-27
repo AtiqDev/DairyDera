@@ -1,0 +1,253 @@
+/* =============================================
+   stubs.css — Material-style navigation hub design system
+   Used by: dashboard, daily_stub, inventory_stub,
+            customers_stub, suppliers_stub, expense_stub, reports_stub
+   ============================================= */
+
+:root {
+    --c-daily:     #00897B;
+    --c-purchase:  #1E88E5;
+    --c-sales:     #FB8C00;
+    --c-expense:   #E53935;
+    --c-reports:   #8E24AA;
+    --c-inventory: #43A047;
+    --c-system:    #546E7A;
+}
+
+/* ── Topbar ──────────────────────────────────── */
+.stub-topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.22);
+}
+.stub-topbar .stub-back {
+    background: rgba(255,255,255,.18);
+    border: none;
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+.stub-topbar .stub-back:active { background: rgba(255,255,255,.32); }
+.stub-topbar .stub-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: .01em;
+    flex: 1;
+}
+.stub-topbar .stub-actions {
+    display: flex;
+    gap: 8px;
+}
+.stub-topbar .stub-action-btn {
+    background: rgba(255,255,255,.18);
+    border: none;
+    border-radius: 8px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.stub-topbar .stub-action-btn:active { background: rgba(255,255,255,.32); }
+
+/* Accent color modifiers */
+.accent-daily     { background-color: var(--c-daily);     --stub-accent: var(--c-daily);     }
+.accent-purchase  { background-color: var(--c-purchase);  --stub-accent: var(--c-purchase);  }
+.accent-sales     { background-color: var(--c-sales);     --stub-accent: var(--c-sales);     }
+.accent-expense   { background-color: var(--c-expense);   --stub-accent: var(--c-expense);   }
+.accent-reports   { background-color: var(--c-reports);   --stub-accent: var(--c-reports);   }
+.accent-inventory { background-color: var(--c-inventory); --stub-accent: var(--c-inventory); }
+.accent-system    { background-color: var(--c-system);    --stub-accent: var(--c-system);    }
+
+/* ── Body ────────────────────────────────────── */
+.stub-body {
+    background: #F5F6FA;
+    min-height: calc(100vh - 52px);
+    padding-bottom: 24px;
+}
+
+/* ── Section band ────────────────────────────── */
+.stub-section-band {
+    padding: 8px 16px 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .10em;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0;
+}
+
+/* ── Tile grid ───────────────────────────────── */
+.stub-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 14px 14px 6px;
+}
+
+/* ── Tile ────────────────────────────────────── */
+.stub-tile {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 10px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,.10), 0 0 0 1px rgba(0,0,0,.04);
+    border-left: 3px solid var(--stub-accent, #9e9e9e);
+    transition: transform .12s ease, box-shadow .12s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+.stub-tile:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+/* ── Icon circle ─────────────────────────────── */
+.stub-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    font-size: 19px;
+    flex-shrink: 0;
+}
+.icon-daily     { background: rgba(0,137,123,.13);  color: var(--c-daily);     }
+.icon-purchase  { background: rgba(30,136,229,.13); color: var(--c-purchase);  }
+.icon-sales     { background: rgba(251,140,0,.13);  color: var(--c-sales);     }
+.icon-expense   { background: rgba(229,57,53,.13);  color: var(--c-expense);   }
+.icon-reports   { background: rgba(142,36,170,.13); color: var(--c-reports);   }
+.icon-inventory { background: rgba(67,160,71,.13);  color: var(--c-inventory); }
+.icon-system    { background: rgba(84,110,122,.13); color: var(--c-system);    }
+
+/* ── Tile label ──────────────────────────────── */
+.stub-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #2E3A37;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: .01em;
+}
+
+/* ── Dashboard hub tiles (larger variant) ────── */
+.stub-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 16px 14px;
+}
+.stub-hub-tile {
+    border-radius: 14px;
+    padding: 22px 12px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 110px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,.14);
+    transition: transform .12s ease, box-shadow .12s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    color: #fff;
+}
+.stub-hub-tile:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+.stub-hub-tile .stub-hub-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    opacity: .92;
+}
+.stub-hub-tile .stub-hub-label {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .02em;
+    text-align: center;
+    opacity: .97;
+}
+
+/* ── Stock table (daily_stub) ─────────────────── */
+.stub-stock-card {
+    margin: 14px 14px 4px;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,.10);
+}
+.stub-stock-card table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.stub-stock-card thead th {
+    padding: 8px 12px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #fff;
+    background: var(--c-daily);
+}
+.stub-stock-card tbody td {
+    padding: 9px 12px;
+    color: #2E3A37;
+    border-bottom: 1px solid #F0F0F0;
+}
+.stub-stock-card tbody tr:last-child td { border-bottom: none; }
+.stub-stock-card tbody tr:nth-child(even) td { background: #F9FFFE; }
+.stub-stock-card .td-qty { text-align: right; font-weight: 700; font-family: monospace; color: var(--c-daily); }
+
+/* ── Dashboard app name strip ─────────────────── */
+.stub-app-header {
+    background: linear-gradient(135deg, #004d00 0%, #00695C 100%);
+    padding: 20px 16px 16px;
+    color: #fff;
+}
+.stub-app-header .app-name {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: .01em;
+}
+.stub-app-header .app-sub {
+    font-size: 11px;
+    opacity: .72;
+    margin-top: 2px;
+    letter-spacing: .04em;
+}
+
+/* ── Sales summary chips (dashboard) ─────────── */
+#sales-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px 0;
+}
