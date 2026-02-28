@@ -229,7 +229,7 @@ class JournalRepository(private val helper: DatabaseHelper) {
                 Log.d("Journal", "Rule $sequence: Dr=$debitAccId, Cr=$creditAccId")
 
                 val amount = helper.calculateAmount(txn, creditAccId)
-                if (amount <= 0 && !helper.isCogsRule(creditAccId)) {
+                if (amount <= 0) {
                     Log.d("Journal", "amount = 0. Skipping journal entry.")
                     continue
                 }

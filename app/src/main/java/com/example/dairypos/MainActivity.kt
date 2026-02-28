@@ -300,6 +300,16 @@ class MainActivity : AppCompatActivity() {
                             "deleteMapping"         -> modules.deleteMapping(payload!!.getInt("id"))
                             "getUnmappedSummary"    -> modules.getUnmappedSummary()
 
+                            // --- Operational Entities ---
+                            "getModulesWithEntityCount" -> db.getModulesWithEntityCount()
+                            "getEntitiesByModule"       -> db.getEntitiesByModule(payload!!.getInt("moduleId"))
+                            "getUnassignedEntities"     -> db.getUnassignedEntities()
+                            "getEntityDetail"           -> db.getEntityDetail(payload!!.getInt("entityId"))
+                            "assignEntityToModule"      -> db.assignEntityToModule(payload!!.getInt("entityId"), payload.getInt("moduleId"))
+                            "removeEntityFromModule"    -> db.removeEntityFromModule(payload!!.getInt("entityId"))
+                            "saveOperationalPayment"        -> db.saveOperationalPayment(payload!!.toString())
+                            "getOperationalPayableBalances" -> db.getOperationalPayableBalances()
+
                             // --- Actions (Save/Update/Delete) ---
                             "saveSyncSettings" -> db.saveSyncerSettings(payload!!.toString())
                             "savePurchase" -> procurement.savePurchase(payload!!.toString())

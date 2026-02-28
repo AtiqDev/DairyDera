@@ -171,8 +171,10 @@ const bundledScreens = {
     'journal_report':true,
     'pl_report':true,
     'modules_registry':true,
+    'operational_entities':true,
     'admin_stub':true,
-    'sync':true
+    'sync':true,
+    'pay_operational_liabilities':true
   };
 // Router: when hash changes, pull the right template
 function router() {

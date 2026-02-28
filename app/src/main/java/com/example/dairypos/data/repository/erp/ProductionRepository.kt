@@ -133,8 +133,6 @@ class ProductionRepository(private val helper: DatabaseHelper) {
             var date = helper.nowISoDateOnly()
             val batchId = getBatchId()
 
-            recordProductionCostReversal()
-
             val producedMilkObj = getProducedMilkDetails()
             val purchasedMilkDetails = fetchPurchasedMilkDetails()
 
@@ -232,8 +230,9 @@ class ProductionRepository(private val helper: DatabaseHelper) {
             val uomId = obj.getInt("uomId")
             val date = helper.nowIso()
 
-            helper.processDailyWages();
-            helper.processDailyRentalCost();
+            helper.stageMonthlyOperationalCosts()
+            helper.processOperationalCostExpenses()
+            wipCapitalization()   // capitalize accrued expenses into WIP immediately
             val baseUomId = helper.getBaseUomId(productId)
             val factor = helper.getConversionFactor(uomId, baseUomId)
             val baseQty = totalLiters * factor
@@ -558,7 +557,7 @@ class ProductionRepository(private val helper: DatabaseHelper) {
         db.execSQL(updateQuery, arrayOf(transactionType))
     }
 
-    fun recordProductionCostReversal() {
+    fun wipCapitalization() {
 
         try {
             var date = helper.nowISoDateOnly()

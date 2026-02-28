@@ -24,25 +24,19 @@
         </table>
     </div>
 
-    <!-- Daily Work Flow -->
-    <!-- 1. Purchase - Consumble Feed-->
-    <!-- 2. Consume - Feed by cows-->
-
-    <!-- 3. Produce Milk  -> api call to saveMilkProduction-->
-    <!-- this event should take the prior expenses of Consumption and also generate Labor, fuel, electricity and rental expense journal entries prior to production
-    and after that combine the daily expenses of prior expenses into 1015 Inventory WIP journal acount
+    <!-- Daily Work Flow:
+         1. Purchase  - consumable feed or raw milk (via Suppliers -> Purchase)
+         2. Consume   - feed by cows
+         3. Produce Milk -> saveMilkProduction:
+              stages monthly costs once per month (wages, rent, fuel, electricity)
+              accrues today's daily share of each as Expense journal entries
+              then capitalizes all into 1015 WIP during saveMix
+         4. Mix Milk  -> saveMix: combines purchased + produced milk into sellable stock
+         5. Sale Milk - creates Accounts Receivable entries
     -->
-
-    <!-- 8. Purchase raw Molk of type Cow or Buffallo-->
-
-    <!-- 9. Mix Milk - api call to saveMix -> this event combines the purchased milk if any to the produced milk if any and creates Sellable Production milk inventory-->
-
-    <!-- 10. Sale Milk - this event creates Accounts Receivable Entries-->
 
     <div class="stub-section-band accent-daily">Work</div>
     <div class="stub-grid">
-
-        <!-- Purchasing of Consumable products and purchasing of raw milk both are done via Suppliers -> Purchaseing -->
 
         <div class="stub-tile accent-daily" onclick="navigate('suppliers')">
             <div class="stub-icon icon-purchase"><i class="fas fa-shopping-cart"></i></div>
@@ -52,28 +46,6 @@
         <div class="stub-tile accent-daily" onclick="navigate('stock_consumption')">
             <div class="stub-icon icon-daily"><i class="fas fa-balance-scale"></i></div>
             <div class="stub-label">Consume</div>
-        </div>
-
-        <div class="stub-tile accent-expense" onclick="navigate('worker_expense')">
-            <div class="stub-icon icon-expense"><i class="fas fa-hard-hat"></i></div>
-            <div class="stub-label">Labor Expense</div>
-        </div>
-
-        <div class="stub-tile accent-expense" onclick="navigate('fuel_expense')">
-            <div class="stub-icon icon-expense"><i class="fas fa-gas-pump"></i></div>
-            <div class="stub-label">Daily Fuel Expense</div>
-        </div>
-
-        <!-- Tobe added based on -->
-        <div class="stub-tile accent-expense" onclick="navigate('fuel_expense')">
-            <div class="stub-icon icon-expense"><i class="fas fa-gas-pump"></i></div>
-            <div class="stub-label">Rent Expense</div>
-        </div>
-
-        <!-- Tobe added -->
-        <div class="stub-tile accent-expense" onclick="navigate('fuel_expense')">
-            <div class="stub-icon icon-expense"><i class="fas fa-gas-pump"></i></div>
-            <div class="stub-label">Estimated Electricity Expense</div>
         </div>
 
         <div class="stub-tile accent-daily" onclick="navigate('produce_milk')">
