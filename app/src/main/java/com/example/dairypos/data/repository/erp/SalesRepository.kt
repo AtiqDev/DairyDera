@@ -188,7 +188,13 @@ class SalesRepository(private val helper: DatabaseHelper) {
             val qty = input.quantity
 
             val queryCustomerRate = """
-            SELECT COALESCE(NULLIF(rate, 0), 240) AS rate
+            SELECT COALESCE(
+                NULLIF(c.rate, 0),
+                (SELECT spr.rate FROM SellableProductRates spr
+                 JOIN products p ON spr.productId = p.id
+                 WHERE p.name = 'Milk'
+                 LIMIT 1)
+            ) AS rate
             FROM customers c
             WHERE c.id = ?
         """.trimIndent()
@@ -232,9 +238,9 @@ class SalesRepository(private val helper: DatabaseHelper) {
             val saleTxn = AccountingTransactionInput(
                 type = "Sale",
                 subType = "Product",
-                table = "productionBatches",
-                refId = batchId,
-                refId2 = newSaleId,
+                table = "sales",
+                refId = newSaleId,
+                refId2 = batchId,
                 productId = productId,
                 amount = saleAmount,
                 unitPrice = rate,

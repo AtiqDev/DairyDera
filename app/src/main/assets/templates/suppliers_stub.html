@@ -1,65 +1,51 @@
 <!-- File: templates/suppliers_stub.html -->
-<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
-    <button
-            type="button"
-            class="btn btn-outline-secondary btn-sm btn-icon me-2"
-            onclick="navigate('dashboard')"
-            aria-label="Back"
-            style="width: 32px; height: 32px; padding: 0;"
-    >
-        <i class="fas fa-arrow-circle-left"></i>
-    </button>
-    <h5 class="screen-title mb-0 flex-grow-1">Suppliers</h5>
+
+<div class="stub-topbar accent-purchase">
+    <button class="stub-back" onclick="navigate('dashboard')"><i class="fas fa-arrow-left"></i></button>
+    <div class="stub-title">Suppliers</div>
+    <div class="ConsoleLog"></div>
 </div>
 
-<div class="screen-body pt-2 bg-primary bg-opacity-25">
-    <!-- Suppliers Section -->
-    <h4 class="mb-4">Suppliers</h4>
-    <div class="row text-center mb-5">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    style="cursor:pointer;"
-                    onclick="navigate('suppliers')"
-            >
-                <i class="fas fa-users fa-2x text-primary"></i>
-                <div class="mt-2 small text-dark">Suppliers</div>
-            </div>
+<div class="stub-body">
+
+    <div class="stub-section-band accent-purchase">Suppliers</div>
+    <div class="stub-grid">
+
+        <div class="stub-tile accent-purchase" onclick="navigate('suppliers')">
+            <div class="stub-icon icon-purchase"><i class="fas fa-truck"></i></div>
+            <div class="stub-label">Manage</div>
         </div>
+
     </div>
 
-    <!-- Purchase Actions Section -->
-    <h4 class="mb-4">Purchase Actions</h4>
-    <div class="row text-center">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    style="cursor:pointer;"
-                    onclick="navigate('purchase_asset')"
-            >
-                <i class="fas fa-shopping-cart fa-2x text-primary"></i>
-                <div class="mt-2 small text-dark">Purchase Milk</div>
-            </div>
+    <div class="stub-section-band accent-purchase">Purchases</div>
+    <div class="stub-grid">
+
+        <div class="stub-tile accent-purchase" onclick="navigate('purchase_asset')">
+            <div class="stub-icon icon-purchase"><i class="fas fa-shopping-cart"></i></div>
+            <div class="stub-label">Purchase Milk</div>
         </div>
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    style="cursor:pointer;"
-                    onclick="navigate('purchase')"
-            >
-                <i class="fas fa-shopping-cart fa-2x text-primary"></i>
-                <div class="mt-2 small text-dark">New Purchase</div>
-            </div>
+
+        <div class="stub-tile accent-purchase" onclick="navigate('purchase')">
+            <div class="stub-icon icon-purchase"><i class="fas fa-plus-circle"></i></div>
+            <div class="stub-label">New Purchase</div>
         </div>
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    style="cursor:pointer;"
-                    onclick="navigate('purchase_report')"
-            >
-                <i class="fas fa-file-invoice fa-2x text-primary"></i>
-                <div class="mt-2 small text-dark">View Reports</div>
-            </div>
+
+        <div class="stub-tile accent-purchase" onclick="navigate('purchase_report')">
+            <div class="stub-icon icon-reports"><i class="fas fa-file-invoice"></i></div>
+            <div class="stub-label">View Reports</div>
         </div>
+
     </div>
+
+    <div class="stub-section-band accent-purchase">Payables</div>
+    <div class="stub-grid">
+
+        <div class="stub-tile accent-purchase" onclick="navigate('ap_payment')">
+            <div class="stub-icon icon-purchase"><i class="fas fa-hand-holding-usd"></i></div>
+            <div class="stub-label">Pay Supplier</div>
+        </div>
+
+    </div>
+
 </div>

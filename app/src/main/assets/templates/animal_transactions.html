@@ -1,0 +1,144 @@
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button class="btn btn-outline-secondary btn-sm btn-icon me-2"
+            onclick="navigate('livestock_stub')" style="width:32px;height:32px;padding:0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="mb-0 flex-grow-1 ms-2">Animal Transactions</h5>
+    <div class="ConsoleLog"></div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs px-3 pt-2 bg-white border-bottom">
+    <li class="nav-item">
+        <button class="nav-link" id="tab-purchase">Purchase</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="tab-birth">Birth</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="tab-sale-death">Sale / Death</button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" id="tab-history">History</button>
+    </li>
+</ul>
+
+<div style="padding:1rem;padding-bottom:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+
+<!-- Purchase Panel -->
+<div id="panel-purchase">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white fw-bold">Purchase Animal</div>
+        <div class="card-body">
+            <div class="mb-3"><label class="form-label">Tag Number *</label>
+                <input type="text" class="form-control" id="atp-tag"></div>
+            <div class="mb-3"><label class="form-label">Name</label>
+                <input type="text" class="form-control" id="atp-name"></div>
+            <div class="mb-3"><label class="form-label">Breed</label>
+                <input type="text" class="form-control" id="atp-breed"></div>
+            <div class="mb-3"><label class="form-label">Gender *</label>
+                <select class="form-select" id="atp-gender">
+                    <option value="">Select…</option>
+                    <option value="F">Female</option>
+                    <option value="M">Male</option>
+                    <option value="C">Calf</option>
+                </select></div>
+            <div class="mb-3"><label class="form-label">Date of Birth</label>
+                <input type="date" class="form-control" id="atp-dob"></div>
+            <div class="mb-3"><label class="form-label">Purchase Price (Rs) *</label>
+                <input type="number" class="form-control" id="atp-price" step="0.01" min="0"></div>
+            <div class="mb-3"><label class="form-label">Purchase Date *</label>
+                <input type="date" class="form-control" id="atp-date"></div>
+            <div class="mb-3"><label class="form-label">Vendor / Seller</label>
+                <input type="text" class="form-control" id="atp-vendor"></div>
+            <div class="mb-3"><label class="form-label">Notes</label>
+                <textarea class="form-control" id="atp-notes" rows="2"></textarea></div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-success w-100" id="atp-save-btn">
+                <i class="fas fa-cow"></i> Record Purchase
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Birth Panel -->
+<div id="panel-birth" style="display:none;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-dark fw-bold">Register Birth</div>
+        <div class="card-body">
+            <div class="mb-3"><label class="form-label">Calf Tag Number *</label>
+                <input type="text" class="form-control" id="atb-tag"></div>
+            <div class="mb-3"><label class="form-label">Date of Birth *</label>
+                <input type="date" class="form-control" id="atb-dob"></div>
+            <div class="mb-3"><label class="form-label">Dam (Mother)</label>
+                <select class="form-select" id="atb-dam">
+                    <option value="">Select dam…</option>
+                </select></div>
+            <div class="mb-3"><label class="form-label">Notes</label>
+                <textarea class="form-control" id="atb-notes" rows="2"></textarea></div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-info w-100" id="atb-save-btn">
+                <i class="fas fa-baby"></i> Register Calf
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Sale/Death Panel -->
+<div id="panel-sale-death" style="display:none;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark fw-bold">Sale / Death / Cull</div>
+        <div class="card-body">
+            <div class="mb-3"><label class="form-label">Animal *</label>
+                <select class="form-select" id="atsd-animal">
+                    <option value="">Select animal…</option>
+                </select></div>
+            <div class="mb-3"><label class="form-label">Event Type *</label>
+                <select class="form-select" id="atsd-type">
+                    <option value="">Select…</option>
+                    <option value="sale">Sale</option>
+                    <option value="death">Death</option>
+                    <option value="cull">Cull</option>
+                </select></div>
+            <div class="mb-3"><label class="form-label">Date *</label>
+                <input type="date" class="form-control" id="atsd-date"></div>
+            <!-- Sale-specific fields -->
+            <div id="atsd-sale-fields" style="display:none;">
+                <div class="mb-3"><label class="form-label">Sale Price (Rs) *</label>
+                    <input type="number" class="form-control" id="atsd-amount" step="0.01" min="0"></div>
+                <div class="mb-3"><label class="form-label">Buyer</label>
+                    <input type="text" class="form-control" id="atsd-counterparty"></div>
+            </div>
+            <div class="mb-3"><label class="form-label">Notes</label>
+                <textarea class="form-control" id="atsd-notes" rows="2"></textarea></div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-warning w-100" id="atsd-save-btn">
+                Record Event
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- History Panel -->
+<div id="panel-history" style="display:none;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light fw-bold">Recent Transactions</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr><th>Date</th><th>Tag</th><th>Type</th><th>Amount</th><th>Party</th></tr>
+                    </thead>
+                    <tbody id="ath-rows">
+                        <tr><td colspan="5" class="text-center text-muted">Loading…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div><!-- end container -->

@@ -1,0 +1,174 @@
+<style>
+.oe-panel {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #f4f6f9;
+  overflow-y: auto;
+  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+  -webkit-overflow-scrolling: touch;
+}
+.oe-panel.slide-right { transform: translateX(100%); }
+
+.oe-topbar {
+  position: sticky; top: 0; z-index: 10;
+  background: #fff; border-bottom: 1px solid #e8eaed;
+  display: flex; align-items: center;
+  padding: 10px 14px; min-height: 54px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.oe-topbar .oe-back {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: none; background: #f0f2f5;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #444; cursor: pointer; flex-shrink: 0;
+}
+.oe-topbar .oe-back:active { background: #e2e5ea; }
+.oe-topbar h5 { margin: 0; flex: 1; padding: 0 10px; font-size: 1rem; font-weight: 600; }
+
+/* Module cards */
+.oe-module-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 16px 16px 0;
+}
+.oe-module-card {
+  background: #fff; border-radius: 16px; padding: 16px 14px 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07); cursor: pointer;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: transform 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.oe-module-card:active { transform: scale(0.97); }
+.oe-module-icon {
+  width: 46px; height: 46px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: #fff;
+}
+.oe-module-name { font-size: 0.88rem; font-weight: 700; color: #222; }
+.oe-entity-count { font-size: 0.75rem; color: #666; }
+
+/* Unassigned section */
+.oe-unassigned-card {
+  margin: 14px 16px 20px; border-radius: 14px; overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.oe-unassigned-card .card-header {
+  padding: 10px 14px; font-size: 0.85rem; font-weight: 700;
+}
+
+/* Entity list */
+.oe-entity-list {
+  background: #fff; margin: 12px 16px; border-radius: 14px;
+  overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.oe-entity-row {
+  display: flex; align-items: center;
+  min-height: 62px; padding: 0 16px;
+  border-bottom: 1px solid #f2f4f6; cursor: pointer;
+  transition: background 0.1s; -webkit-tap-highlight-color: transparent;
+}
+.oe-entity-row:last-child { border-bottom: none; }
+.oe-entity-row:active { background: #f8f9fa; }
+.oe-entity-info { flex: 1; }
+.oe-entity-name { font-size: 0.92rem; font-weight: 600; color: #1a1a2e; }
+.oe-entity-meta { font-size: 0.76rem; color: #888; }
+.oe-entity-type-badge {
+  font-size: 0.72rem; font-weight: 600; padding: 3px 9px;
+  border-radius: 20px; margin-right: 8px;
+  background: #e9f5fb; color: #0d6efd;
+}
+.oe-chevron { color: #bbb; font-size: 13px; }
+.oe-remove-btn {
+  border: none; background: #fff0f0; color: #dc3545;
+  border-radius: 8px; padding: 6px 12px; font-size: 0.78rem;
+  cursor: pointer; margin-right: 8px;
+}
+.oe-remove-btn:active { background: #fcd6d6; }
+
+/* Detail panel */
+.oe-detail-body { padding: 16px 16px 100px; }
+.oe-detail-card {
+  background: #fff; border-radius: 14px; padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 14px;
+}
+.oe-detail-label { font-size: 0.75rem; color: #888; margin-bottom: 2px; }
+.oe-detail-value { font-size: 0.95rem; font-weight: 600; color: #1a1a2e; }
+
+/* Assign-to-module sheet */
+.oe-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.42);
+  z-index: 99; opacity: 0; transition: opacity 0.25s; pointer-events: none;
+}
+.oe-overlay.active { opacity: 1; pointer-events: auto; }
+.oe-sheet {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #fff; border-radius: 22px 22px 0 0;
+  z-index: 100; max-height: 70vh; overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.oe-sheet.open { transform: translateY(0); }
+.oe-sheet-handle { width: 36px; height: 4px; background: #dee2e6; border-radius: 2px; margin: 12px auto 0; }
+.oe-sheet-header { padding: 14px 20px 10px; border-bottom: 1px solid #f0f2f5; }
+.oe-sheet-header h6 { margin: 0; font-size: 1rem; font-weight: 700; }
+.oe-sheet-body { padding: 14px 20px 32px; }
+.oe-module-option {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 4px; border-bottom: 1px solid #f2f4f6;
+  cursor: pointer; font-size: 0.92rem; font-weight: 500;
+  -webkit-tap-highlight-color: transparent;
+}
+.oe-module-option:last-child { border-bottom: none; }
+.oe-module-option:active { background: #f8f9fa; }
+.oe-module-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+.oe-empty { text-align: center; padding: 40px 24px; color: #999; }
+.oe-empty i { font-size: 40px; margin-bottom: 12px; opacity: 0.35; display: block; }
+.oe-empty p { font-size: 0.85rem; }
+</style>
+
+<!-- PANEL A: Modules overview -->
+<div id="oe-panel-a" class="oe-panel">
+    <div class="oe-topbar">
+        <button class="oe-back" onclick="navigate('admin_stub')"><i class="fas fa-arrow-left"></i></button>
+        <h5>Operational Costs</h5>
+        <div class="ConsoleLog"></div>
+    </div>
+
+    <div class="oe-module-grid" id="oe-module-grid"><!-- JS --></div>
+
+    <div class="oe-unassigned-card card" id="oe-unassigned-section" style="display:none">
+        <div class="card-header bg-warning text-dark d-flex align-items-center gap-2">
+            <i class="fas fa-unlink"></i>
+            <span>Unassigned Entities</span>
+        </div>
+        <div class="oe-entity-list" id="oe-unassigned-list" style="margin:0;border-radius:0;box-shadow:none;"><!-- JS --></div>
+    </div>
+</div>
+
+<!-- PANEL B: Entities in a module -->
+<div id="oe-panel-b" class="oe-panel slide-right">
+    <div class="oe-topbar">
+        <button class="oe-back" id="oe-back-b"><i class="fas fa-arrow-left"></i></button>
+        <h5 id="oe-panel-b-title">Module</h5>
+    </div>
+    <div class="oe-entity-list" id="oe-entity-list"><!-- JS --></div>
+</div>
+
+<!-- PANEL C: Entity detail -->
+<div id="oe-panel-c" class="oe-panel slide-right">
+    <div class="oe-topbar">
+        <button class="oe-back" id="oe-back-c"><i class="fas fa-arrow-left"></i></button>
+        <h5 id="oe-panel-c-title">Entity</h5>
+    </div>
+    <div class="oe-detail-body" id="oe-detail-body"><!-- JS --></div>
+</div>
+
+<!-- Overlay + Assign sheet -->
+<div class="oe-overlay" id="oe-overlay"></div>
+<div class="oe-sheet" id="oe-sheet">
+    <div class="oe-sheet-handle"></div>
+    <div class="oe-sheet-header">
+        <h6>Assign to Module</h6>
+    </div>
+    <div class="oe-sheet-body" id="oe-sheet-body"><!-- JS --></div>
+</div>

@@ -1,0 +1,89 @@
+<!-- File: templates/ap_payment.html -->
+<style>
+    .ap-container {
+        padding: 1rem;
+        padding-bottom: 70px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .fixed-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 10px 15px;
+        background-color: #ffffff;
+        border-top: 1px solid #dee2e6;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+        z-index: 1000;
+    }
+    .form-control, .form-select {
+        min-height: 48px;
+    }
+    .balance-banner {
+        font-size: 1.1rem;
+    }
+</style>
+
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button class="btn btn-outline-secondary btn-sm btn-icon me-2" onclick="navigate()" style="width: 32px; height: 32px; padding: 0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="mb-0 flex-grow-1 ms-2">AP Payment</h5>
+    <div class="ConsoleLog"></div>
+</div>
+
+<div class="ap-container">
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-primary text-white">Supplier</div>
+        <div class="card-body">
+            <select class="form-select" id="supplierSelect">
+                <option value="">Select Supplier…</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3" id="balanceCard" style="display:none;">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center balance-banner">
+                <span class="text-muted">Open Balance</span>
+                <span class="fw-bold text-danger" id="openBalanceDisplay">Rs 0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3" id="paymentCard" style="display:none;">
+        <div class="card-header bg-light fw-bold">Payment Details</div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="methodSelect" class="form-label">Payment Method <span class="text-danger">*</span></label>
+                <select class="form-select" id="methodSelect">
+                    <!-- populated from apPaymentMethods table -->
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="paymentAmount" class="form-label">Amount <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="paymentAmount" step="0.01" min="0.01" placeholder="0.00">
+            </div>
+
+            <div class="mb-3">
+                <label for="paymentDate" class="form-label">Payment Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="paymentDate">
+            </div>
+
+            <div class="mb-3">
+                <label for="paymentNotes" class="form-label">Notes</label>
+                <textarea class="form-control" id="paymentNotes" rows="2" placeholder="Reference, cheque no., etc."></textarea>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="fixed-footer">
+    <button type="button" class="btn btn-lg btn-primary w-100" id="savePaymentBtn" disabled>
+        <i class="fas fa-save"></i> Save Payment
+    </button>
+</div>

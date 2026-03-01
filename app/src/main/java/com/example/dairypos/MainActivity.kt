@@ -1,8 +1,5 @@
 package com.example.dairypos
 
-import com.example.dairypos.DatabaseHelper
-import android.content.Context
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import android.Manifest
 import android.content.Intent
@@ -35,20 +32,21 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var db: DatabaseHelper
+    private lateinit var helper: DatabaseHelper
     private lateinit var webView: WebView
     private lateinit var photoUri: Uri
     private var photoCaptureCustomerId: Int = 0
 
-    private val procurement get() = db.procurement
-    private val inventory get() = db.inventory
-    private val production get() = db.production
-    private val sales get() = db.sales
-    private val customer get() = db.customer
-    private val expense get() = db.expense
-    private val account get() = db.account
-    private val journal get() = db.journal
-    private val financialReport get() = db.financialReport
+    private val procurement get() = helper.procurement
+    private val inventory get() = helper.inventory
+    private val production get() = helper.production
+    private val sales get() = helper.sales
+    private val customer get() = helper.customer
+    private val expense get() = helper.expense
+    private val account get() = helper.account
+    private val journal get() = helper.journal
+    private val financialReport get() = helper.financialReport
+    private val modules get() = helper.modules
 
 // In your MainActivity.kt or the class holding your WebView instance
 
@@ -130,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         WebView.setWebContentsDebuggingEnabled(true)
-        db = DatabaseHelper(this)
+        helper = DatabaseHelper(this)
 
         webView = WebView(this).apply {
             settings.apply {
@@ -231,11 +229,11 @@ class MainActivity : AppCompatActivity() {
                     try {
                         val result: Any? = when (action) {
                             // Simple parameter-less getters
-                            "getClasses" -> db.getAllClasses()
-                            "getSaleStatus" -> db.getAllStatus()
+                            "getClasses" -> helper.getAllClasses()
+                            "getSaleStatus" -> helper.getAllStatus()
                             "getSales" -> sales.getAllSales()
-                            "getSyncSettings" -> db.getSyncerSettings()
-                            "getTableNames" -> db.getTableNames()
+                            "getSyncSettings" -> helper.getSyncerSettings()
+                            "getTableNames" -> helper.getTableNames()
                             "getPurchaseStatus" -> procurement.getPurchaseStatus()
                             "getPurchases" -> procurement.getPurchases()
                             "getSuppliers" -> procurement.getSuppliers()
@@ -261,7 +259,7 @@ class MainActivity : AppCompatActivity() {
 
                             // Getters with parameters
                             "getSaleReport" -> sales.getSaleReport(payload!!.getString("start"), payload.getString("end"))
-                            "executeQuery" -> db.executeRawQuery(payload!!.getString("sql"))
+                            "executeQuery" -> helper.executeRawQuery(payload!!.getString("sql"))
                             "queryPurchaseByDateReport" -> procurement.queryPurchaseByDateReport(payload!!.getString("start"), payload.getString("end"))
                             "getSupplierItems" -> procurement.getSupplierItems(payload!!.getInt("supplierId"))
                             "getProductBaseUnit" -> inventory.getProductBaseUnit(payload!!.getString("productId"))
@@ -279,6 +277,9 @@ class MainActivity : AppCompatActivity() {
                             "getTxnTypeMapping" -> account.getTxnTypeAccountMapping(payload!!.getInt("typeId"))
                             "getPurchase" -> procurement.getPurchase(payload!!.getInt("purchaseId"))
                             "getPurchaseItems" -> procurement.getPurchaseItems(payload!!.getInt("purchaseId"))
+                            "getApPaymentMethods" -> procurement.getApPaymentMethods()
+                            "getSuppliersWithOpenBalance" -> procurement.getSuppliersWithOpenBalance()
+                            "getOpenPayables" -> procurement.getOpenPayables(payload!!.getInt("supplierId"))
                             "getCustomerLocations" -> customer.getCustomerLocations(payload!!.getInt("customerId"))
                             "getCustomerPhotos" -> customer.getCustomerPhotos(payload!!.getInt("customerId"))
                             "isInvoiceExists" -> customer.isInvoiceExists(payload!!.getInt("customerId"), payload.getInt("monthId")).toString()
@@ -288,8 +289,26 @@ class MainActivity : AppCompatActivity() {
                             "getCustomerOpenInvoices" -> customer.getCustomerOpenInvoices(payload!!.getInt("customerId")).let { JSONArray(it).toString() }
                             "getProfitAndLoss" -> financialReport.getProfitAndLoss(payload!!.getString("from"), payload.getString("to"))
 
+                            // --- Modules Registry ---
+                            "getModules"            -> modules.getModules()
+                            "getModuleDetail"       -> modules.getModuleDetail(payload!!.getInt("moduleId"))
+                            "getMappingsForTxnType" -> modules.getMappingsForTxnType(payload!!.getInt("txnTypeId"))
+                            "saveMapping"           -> modules.saveMapping(payload!!.toString())
+                            "deleteMapping"         -> modules.deleteMapping(payload!!.getInt("id"))
+                            "getUnmappedSummary"    -> modules.getUnmappedSummary()
+
+                            // --- Operational Entities ---
+                            "getModulesWithEntityCount" -> helper.getModulesWithEntityCount()
+                            "getEntitiesByModule"       -> helper.getEntitiesByModule(payload!!.getInt("moduleId"))
+                            "getUnassignedEntities"     -> helper.getUnassignedEntities()
+                            "getEntityDetail"           -> helper.getEntityDetail(payload!!.getInt("entityId"))
+                            "assignEntityToModule"      -> helper.assignEntityToModule(payload!!.getInt("entityId"), payload.getInt("moduleId"))
+                            "removeEntityFromModule"    -> helper.removeEntityFromModule(payload!!.getInt("entityId"))
+                            "saveOperationalPayment"        -> helper.saveOperationalPayment(payload!!.toString())
+                            "getOperationalPayableBalances" -> helper.getOperationalPayableBalances()
+
                             // --- Actions (Save/Update/Delete) ---
-                            "saveSyncSettings" -> db.saveSyncerSettings(payload!!.toString())
+                            "saveSyncSettings" -> helper.saveSyncerSettings(payload!!.toString())
                             "savePurchase" -> procurement.savePurchase(payload!!.toString())
                             "saveSupplierItems" -> procurement.saveSupplierItems(payload!!.toString())
                             "saveSale" -> sales.saveSale(payload!!.toString())
@@ -304,7 +323,7 @@ class MainActivity : AppCompatActivity() {
                                 logAction("STOCK_UPDATED", "Stock", pid)
                                 "OK"
                             }
-                            "saveTransaction" -> db.saveTransaction(payload!!.toString())
+                            "saveTransaction" -> helper.saveTransaction(payload!!.toString())
                             "saveProduct" -> inventory.saveProduct(payload!!.toString())
                             "deleteProduct" -> {
                                 val id = payload!!.getInt("id")
@@ -332,6 +351,7 @@ class MainActivity : AppCompatActivity() {
                             "deleteSupplier" -> procurement.deleteSupplier(payload!!.getInt("id"))
                             "deletePurchase" -> procurement.deletePurchase(payload!!.getInt("id"))
                             "saveAssetPurchase" -> procurement.saveAssetPurchase(payload!!.toString())
+                            "savePayablePayment" -> procurement.savePayablePayment(payload!!.toString())
                             "saveMilkProduction" -> production.saveMilkProduction(payload!!.toString())
                             "saveFuelExpense" -> expense.saveFuelExpense(payload!!.toString())
                             "saveLaborExpense" -> expense.saveLaborExpense(payload!!.toString())
@@ -398,9 +418,52 @@ class MainActivity : AppCompatActivity() {
 
                              // --- Logging ---
                              "logError" -> {
-                                 db.logError(payload!!.getString("page"), payload.getString("message"), payload.getString("stack"))
+                                 helper.logError(payload!!.getString("page"), payload.getString("message"), payload.getString("stack"))
                              }
 
+
+                            // --- Livestock: Herd Registry ---
+                            "getGroups"          -> helper.livestock.getGroups()
+                            "saveGroup"          -> helper.livestock.saveGroup(payload!!.toString())
+                            "deleteGroup"        -> helper.livestock.deleteGroup(payload!!.getInt("id"))
+                            "getAnimals"         -> { val gid = payload?.optInt("groupId")?.takeIf { it > 0 }; helper.livestock.getAnimals(gid) }
+                            "getAnimalById"      -> helper.livestock.getAnimalById(payload!!.getInt("id"))
+                            "saveAnimal"         -> helper.livestock.saveAnimal(payload!!.toString())
+                            "updateAnimalStatus" -> helper.livestock.updateAnimalStatus(payload!!.getInt("id"), payload.getString("status"))
+                            "searchAnimals"      -> helper.livestock.searchAnimals(payload!!.getString("query"))
+                            "getHerdSummary"     -> helper.livestock.getHerdSummary()
+                            // --- Livestock: Animal Transactions ---
+                            "saveAnimalPurchase"    -> helper.animalTxn.saveAnimalPurchase(payload!!.toString())
+                            "recordBirth"           -> helper.animalTxn.recordBirth(payload!!.toString())
+                            "saveAnimalSale"        -> helper.animalTxn.saveAnimalSale(payload!!.toString())
+                            "recordAnimalDeath"     -> helper.animalTxn.recordAnimalDeath(payload!!.toString())
+                            "getTransactionHistory" -> helper.animalTxn.getTransactionHistory(payload!!.getInt("animalId"))
+                            "getRecentTransactions" -> helper.animalTxn.getRecentTransactions()
+                            // --- Livestock: Health ---
+                            "getSchedules"           -> helper.animalHealth.getSchedules()
+                            "saveSchedule"           -> helper.animalHealth.saveSchedule(payload!!.toString())
+                            "deleteSchedule"         -> helper.animalHealth.deleteSchedule(payload!!.getInt("id"))
+                            "getHealthEvents"        -> helper.animalHealth.getHealthEvents(payload!!.getInt("animalId"))
+                            "saveHealthEvent"        -> helper.animalHealth.saveHealthEvent(payload!!.toString())
+                            "deleteHealthEvent"      -> helper.animalHealth.deleteHealthEvent(payload!!.getInt("id"))
+                            "getOverdueVaccinations" -> helper.animalHealth.getOverdueVaccinations()
+                            "getHealthSummary"       -> helper.animalHealth.getHealthSummary(payload!!.getInt("animalId"))
+                            // --- Livestock: Reproduction ---
+                            "getReproductionHistory" -> helper.animalRepro.getReproductionHistory(payload!!.getInt("animalId"))
+                            "recordHeat"             -> helper.animalRepro.recordHeat(payload!!.toString())
+                            "recordInsemination"     -> helper.animalRepro.recordInsemination(payload!!.toString())
+                            "updatePregnancyCheck"   -> helper.animalRepro.updatePregnancyCheck(payload!!.toString())
+                            "recordCalving"          -> helper.animalRepro.recordCalving(payload!!.toString())
+                            "getExpectedCalvings"    -> helper.animalRepro.getExpectedCalvings()
+                            "getActiveCycles"        -> helper.animalRepro.getActiveCycles()
+                            // --- Livestock: Lactation ---
+                            "getActiveLactations"    -> helper.animalLactation.getActiveLactations()
+                            "getDryCows"             -> helper.animalLactation.getDryCows()
+                            "getLactationSummary"    -> helper.animalLactation.getLactationSummary()
+                            "getLactationHistory"    -> helper.animalLactation.getLactationHistory(payload!!.getInt("animalId"))
+                            "createLactation"        -> helper.animalLactation.createLactation(payload!!.toString())
+                            "recordDryOff"           -> helper.animalLactation.recordDryOff(payload!!.toString())
+                            "undoDryOff"             -> helper.animalLactation.undoDryOff(payload!!.getInt("id"))
 
                             else -> {
                                 Log.e("WebMessage", "Unknown action: $action")
@@ -440,7 +503,7 @@ class MainActivity : AppCompatActivity() {
             entityId = entityId,
             extra = extra
         )
-        ActivityLogger.logActivity(this@MainActivity, db, record)
+        ActivityLogger.logActivity(this@MainActivity, helper, record)
     }
 
     // -------------------------------------------------

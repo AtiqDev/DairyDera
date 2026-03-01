@@ -1,123 +1,62 @@
 <!-- File: templates/dashboard.html -->
 
-<!-- Top Bar -->
-<div class="screen-topbar bg-light border-bottom d-flex align-items-center">
-    <button
-            type="button"
-            class="btn btn-outline-secondary btn-sm btn-icon me-2"
-            onclick="navigate('sync')"
-            aria-label="Sync"
-            style="width: 32px; height: 32px; padding: 0;"
-    >
-        <i class="fas fa-sync text-primary"></i>
-    </button>
-    <h5 class="screen-title mb-0 flex-grow-1">Dashboard</h5>
-    <div class="ConsoleLog"></div>
+<!-- App header -->
+<div class="stub-app-header">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            <div class="app-name">Dairy Farm POS</div>
+            <div class="app-sub">MANAGEMENT SYSTEM</div>
+        </div>
+        <button class="stub-action-btn" onclick="navigate('sync')" style="background:rgba(255,255,255,.18);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;cursor:pointer;">
+            <i class="fas fa-sync"></i>
+        </button>
+    </div>
 </div>
 
-<!-- Main Content -->
-<div class="screen-body pt-2 bg-primary bg-opacity-25">
-    <div class="container-fluid py-3 bg-primary bg-opacity-25 min-vh-100">
-        <!-- Sales Summary -->
-        <div id="sales-summary" class="row g-3 mb-5 bg-primary bg-opacity-25 p-3 rounded"></div>
+<!-- Sales summary (live data injected by dashboard JS) -->
+<div id="sales-summary"></div>
 
-        <h4 class="mb-4">Daily Tasks</h4>
-        <div class="row g-3 text-center mb-5 bg-primary bg-opacity-25 p-3 rounded">
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        role="button"
-                        onclick="navigate('daily_stub')"
-                >
-                    <i class="fas fa-warehouse fa-2x text-primary"></i>
-                    <div class="mt-2 small text-dark">Daily</div>
-                </div>
-            </div>
-        </div>
+<!-- Hub tiles -->
+<div class="stub-hub-grid">
 
-        <!-- Inventory Section -->
-        <h4 class="mb-4">Inventory</h4>
-        <div class="row g-3 text-center mb-5 bg-primary bg-opacity-25 p-3 rounded">
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        role="button"
-                        onclick="navigate('inventory_stub')"
-                >
-                    <i class="fas fa-warehouse fa-2x text-primary"></i>
-                    <div class="mt-2 small text-dark">Inventory</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Entities Section -->
-        <h4 class="mb-4">Entities</h4>
-        <div class="row g-3 text-center mb-5 bg-primary bg-opacity-25 p-3 rounded">
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        role="button"
-                        onclick="navigate('customers_stub')"
-                >
-                    <i class="fas fa-users fa-2x text-primary"></i>
-                    <div class="mt-2 small text-dark">Customers</div>
-                </div>
-            </div>
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        role="button"
-                        onclick="navigate('suppliers_stub')"
-                >
-                    <i class="fas fa-truck fa-2x text-primary"></i>
-                    <div class="mt-2 small text-dark">Suppliers</div>
-                </div>
-            </div>
-<!--            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        role="button"
-                        onclick="navigate('expense_stub')"
-                >
-                    <i class="fas fa-file-invoice-dollar fa-2x text-primary"></i>
-                    <div class="mt-2 small text-dark">Expenses</div>
-                </div>
-            </div>-->
-        </div>
-
-        <!-- Settings & Reports Section -->
-        <h4 class="mb-4">Settings & Reports</h4>
-        <div class="row g-3 text-center bg-primary bg-opacity-25 p-3 rounded">
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        role="button"
-                        onclick="navigate('reports_stub')"
-                >
-                    <i class="fas fa-chart-bar fa-2x text-primary"></i>
-                    <div class="mt-2 small text-dark">Reports</div>
-                </div>
-            </div>
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        role="button"
-                        onclick="navigate('query')"
-                >
-                    <i class="fas fa-database fa-2x text-primary"></i>
-                    <div class="mt-2 small text-dark">Query</div>
-                </div>
-            </div>
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                <div
-                        class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                        role="button"
-                        onclick="navigate('sync')"
-                >
-                    <i class="fas fa-sync fa-2x text-primary"></i>
-                    <div class="mt-2 small text-dark">Sync</div>
-                </div>
-            </div>
-        </div>
+    <div class="stub-hub-tile" style="background:var(--c-daily);" onclick="navigate('daily_stub')">
+        <div class="stub-hub-icon"><i class="fas fa-cow"></i></div>
+        <div class="stub-hub-label">Daily</div>
     </div>
+
+    <div class="stub-hub-tile" style="background:var(--c-inventory);" onclick="navigate('inventory_stub')">
+        <div class="stub-hub-icon"><i class="fas fa-boxes"></i></div>
+        <div class="stub-hub-label">Inventory</div>
+    </div>
+
+    <div class="stub-hub-tile" style="background:var(--c-sales);" onclick="navigate('customers_stub')">
+        <div class="stub-hub-icon"><i class="fas fa-users"></i></div>
+        <div class="stub-hub-label">Customers</div>
+    </div>
+
+    <div class="stub-hub-tile" style="background:var(--c-purchase);" onclick="navigate('suppliers_stub')">
+        <div class="stub-hub-icon"><i class="fas fa-truck"></i></div>
+        <div class="stub-hub-label">Suppliers</div>
+    </div>
+
+    <div class="stub-hub-tile" style="background:var(--c-reports);" onclick="navigate('reports_stub')">
+        <div class="stub-hub-icon"><i class="fas fa-chart-bar"></i></div>
+        <div class="stub-hub-label">Reports</div>
+    </div>
+
+    <div class="stub-hub-tile" style="background:var(--c-system);" onclick="navigate('query')">
+        <div class="stub-hub-icon"><i class="fas fa-database"></i></div>
+        <div class="stub-hub-label">Query</div>
+    </div>
+
+    <div class="stub-hub-tile" style="background:#2E7D32;" onclick="navigate('livestock_stub')">
+        <div class="stub-hub-icon"><i class="fas fa-cow"></i></div>
+        <div class="stub-hub-label">Livestock</div>
+    </div>
+
+    <div class="stub-hub-tile" style="background:#455A64;" onclick="navigate('admin_stub')">
+        <div class="stub-hub-icon"><i class="fas fa-cogs"></i></div>
+        <div class="stub-hub-label">Admin Setup</div>
+    </div>
+
 </div>

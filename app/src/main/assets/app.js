@@ -18,7 +18,6 @@ const screenMap0 = {
   report_purchase_edit: 'report_purchase_edit.html',
 
   sync:   'sync.html',
-  errors: 'error_logs.html',
   sales_report:      'sales_report.html',
   trail_balance:    'trail_balance.html',
   balance_sheet:    'balance_sheet.html',
@@ -41,6 +40,10 @@ async function loadScreenBundled(screenId, params = {}) {
     const html = await resp.text();
     const app = document.getElementById('app');
     app.innerHTML = html;
+    // Trigger slide-in animation on every screen load
+    app.classList.remove('screen-enter');
+    void app.offsetWidth; // force reflow so animation restarts
+    app.classList.add('screen-enter');
     console.log(`[Router] Injected template for ${screenId}`);
 
     initInPageLogPanel(screenId);
@@ -140,7 +143,6 @@ const bundledScreens = {
     'receive_payment':true,
     'mix_milk':true,
     'produce_milk':true,
-    'produce_rawmilk':true,
     'uoms':true,
     'products':true,
     'stock':true,
@@ -148,7 +150,37 @@ const bundledScreens = {
     'worker_expense':true,
     'account':true,
     'account_types':true,
-    'query':true
+    'query':true,
+    'inventory_stub':true,
+    'customers_stub':true,
+    'suppliers_stub':true,
+    'expense_stub':true,
+    'reports_stub':true,
+    'purchase_asset':true,
+    'purchase_report':true,
+    'ap_payment':true,
+    'report_purchase_edit':true,
+    'report_sale_edit':true,
+    'sales_report':true,
+    'walkin':true,
+    'transactions':true,
+    'trail_balance':true,
+    'balance_sheet':true,
+    'income_statement':true,
+    'cash_flow':true,
+    'journal_report':true,
+    'pl_report':true,
+    'modules_registry':true,
+    'operational_entities':true,
+    'admin_stub':true,
+    'sync':true,
+    'pay_operational_liabilities':true,
+    'livestock_stub':true,
+    'herd_registry':true,
+    'animal_transactions':true,
+    'animal_health':true,
+    'animal_reproduction':true,
+    'animal_lactation':true
   };
 // Router: when hash changes, pull the right template
 function router() {
@@ -185,5 +217,8 @@ window.onerror = function(message, source, lineno, colno, error) {
 
 window.addEventListener('hashchange', router);
 window.addEventListener('DOMContentLoaded', () => {
-   router();
+  // Sync --header-height to actual rendered header so all sticky topbars align correctly
+  const hdr = document.querySelector('header');
+  if (hdr) document.documentElement.style.setProperty('--header-height', hdr.offsetHeight + 'px');
+  router();
 });

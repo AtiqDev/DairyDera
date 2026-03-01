@@ -1,51 +1,36 @@
-<!-- File: templates/expenses_stub.html -->
-<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
-  <button
-          type="button"
-          class="btn btn-outline-secondary btn-sm btn-icon me-2"
-          onclick="navigate('dashboard')"
-          aria-label="Back"
-          style="width: 32px; height: 32px; padding: 0;"
-  >
-    <i class="fas fa-arrow-circle-left"></i>
-  </button>
-  <h5 class="screen-title mb-0 flex-grow-1">Expenses</h5>
+<!-- File: templates/expense_stub.html -->
+
+<div class="stub-topbar accent-expense">
+    <button class="stub-back" onclick="navigate('dashboard')"><i class="fas fa-arrow-left"></i></button>
+    <div class="stub-title">Expenses</div>
+    <div class="ConsoleLog"></div>
 </div>
 
-<div class="screen-body pt-2 py-3 bg-danger bg-opacity-25">
-  <h4 class="mb-4">Expense Actions</h4>
-  <div class="row g-3 text-center">
-    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-      <div
-              class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-              role="button"
-              onclick="navigate('worker_expense')"
-      >
-        <i class="fas fa-file-invoice-dollar fa-2x text-white bg-danger rounded-circle p-2"></i>
-        <div class="mt-2 small text-dark">Labor Expense</div>
-      </div>
+<div class="stub-body">
+
+    <div class="stub-section-band accent-expense">Expenses</div>
+    <div class="stub-grid">
+
+        <div class="stub-tile accent-expense" onclick="navigate('worker_expense')">
+            <div class="stub-icon icon-expense"><i class="fas fa-hard-hat"></i></div>
+            <div class="stub-label">Labor Expense</div>
+        </div>
+
+        <div class="stub-tile accent-expense" onclick="navigate('fuel_expense')">
+            <div class="stub-icon icon-expense"><i class="fas fa-gas-pump"></i></div>
+            <div class="stub-label">Fuel Expense</div>
+        </div>
+
+        <div class="stub-tile accent-expense" onclick="navigate('pay_operational_liabilities')">
+            <div class="stub-icon icon-expense"><i class="fas fa-hand-holding-usd"></i></div>
+            <div class="stub-label">Pay Liabilities</div>
+        </div>
+
+        <div class="stub-tile accent-expense" onclick="navigate('journal_report')">
+            <div class="stub-icon icon-reports"><i class="fas fa-book"></i></div>
+            <div class="stub-label">View Journal</div>
+        </div>
+
     </div>
 
-    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-      <div
-              class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-              role="button"
-              onclick="navigate('fuel_expense')"
-      >
-        <i class="fas fa-file-invoice-dollar fa-2x text-white bg-danger rounded-circle p-2"></i>
-        <div class="mt-2 small text-dark">Fuel Expense</div>
-      </div>
-    </div>
-
-    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-      <div
-              class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-              role="button"
-              onclick="navigate('journal_report')"
-      >
-        <i class="fas fa-book fa-2x text-white bg-danger rounded-circle p-2"></i>
-        <div class="mt-2 small text-dark">View Journal</div>
-      </div>
-    </div>
-  </div>
 </div>

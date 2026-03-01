@@ -24,6 +24,37 @@
 
 ---
 
+## Frontend Assets / Modules
+
+The WebView frontend lives in:
+`app/src/main/assets/`
+
+Screen JS files follow the naming pattern `s{N}_{screenId}.js` where N is the domain section number:
+- `s0_` = Accounting (accounts, reports, journal)
+- `s1_` = Navigation stubs / dashboard
+- `s2_` = Purchasing & suppliers
+- `s2_ap_payment.js` = AP Payment
+- `s3_` = Sales
+- `s4_` = Stock consumption
+- `s5_` = Customers & invoices
+- `s6_` = Payments
+- `s7_` = Milk production
+- `s8_` = Inventory settings (products, stock, UOMs)
+- `s9_` = Expenses
+- `s10_` = Query tool
+- `s11_` = Operational / sync
+
+Templates live in `assets/templates/`.
+
+**STRICT — NEVER read these large third-party library files. They are external dependencies with no project code:**
+- `app/src/main/assets/codemirror/` — entire folder (CodeMirror editor library)
+- `app/src/main/assets/css/awsomef.css` — FontAwesome icon library
+- `app/src/main/assets/css/bootstrap.css` — Bootstrap CSS framework
+
+Reading these files wastes context tokens and provides no useful project information.
+
+---
+
 ## Critical Code Conventions
 
 ### Extension Functions
@@ -73,22 +104,38 @@ Operational Event
 - `parentJournalId` — self-referencing FK on `journalEntries` for audit trail chaining (being implemented)
 - EOM entries fired by a manual "Close Month" button (user-initiated)
 
+### Modules Registry
+
+`modulesRegistry` catalogs the four ERP modules and links them to their `transactionTypes` via a `moduleId` FK.
+
+**Tables involved:**
+- `modulesRegistry` — 4 rows: Procurement, Sales, Production, Expenses
+- `transactionTypes` — has a `moduleId INTEGER REFERENCES modulesRegistry(id)` column (added in DB_VERSION 2)
+- `accountingJournalsMap` — unchanged; still keyed by `transactionTypeId`
+
+**Module → TransactionType ownership:**
+
+| Module | TransactionTypes |
+|---|---|
+| Procurement | Purchase, PayablePayment |
+| Sales | Sale, BatchSoldCogs, Invoice, ReceivePayment |
+| Production | Production, Mix, FeedUse, ProductionExpense |
+| Expenses | Expense |
+
+**Admin screen:** `modules_registry` (s0) — accessible from Reports stub under "Modules Setup"
+- 3-panel mobile UI: Modules → Transaction Types → Journal Mappings
+- Allows adding/editing/deleting `accountingJournalsMap` rows per TransactionType
+- Shows completeness badges and flags unconfigured TransactionTypes
+
+**Repository:** `data.repository.accounting.ModulesRepository`
+Methods: `getModules()`, `getModuleDetail(moduleId)`, `getMappingsForTxnType(txnTypeId)`,
+`saveMapping(json)`, `deleteMapping(id)`, `getUnmappedSummary()`
+
+---
+
 ### AccountingJournalsMap Sequence Logic
-`sequence` orders multiple journal entries for a single transaction event. Entries are **evidence-based** — a sequence row only fires if the transaction payload justifies it. Accounting does not allow automatic chaining without evidence.
+`sequence` orders multiple journal entries for a single transaction event. Entries are **evidence-based** — a sequence row only fires if the transaction payload justifies it. Accounting does not allow automatic chaining without evidence.curre
 
-**Current state — Purchase (temporary simplification):**
-```
-sequence 1: Dr. Inventory (1001) / Cr. Payables (2000)  → records the liability
-sequence 2: Dr. Payables  (2000) / Cr. Cash     (1000)  → settles immediately (cash assumed)
-```
-Sequence 2 on Purchase is a **temporary placeholder** — it assumes cash paid because the AP Payment module does not yet exist.
-
-**Future state — once AP Payment module is built:**
-```
-Purchase event  → sequence 1 only (Dr. Inventory / Cr. Payables)
-AP Payment event → own entry      (Dr. Payables  / Cr. Cash)
-```
-Sequence 2 will be removed from the Purchase mapping entirely and replaced by the `PayablePayment` transaction type firing its own evidence-based entry.
 
 **General rules for sequence:**
 - `condition = NULL` → always fires (unconditional)
@@ -101,8 +148,8 @@ Sequence 2 will be removed from the Purchase mapping entirely and replaced by th
 
 - `TransactionTypes` INSERT has a syntax error: `('ProductionExpense'),0` → remove the stray `0`
 - COA codes `7000` and `7001` are both named "Vet Expense" — duplicate, needs resolution
-- `PayablePayment` TransactionType is defined but not yet implemented — sequence 2 on Purchase is a temporary workaround until this module is built
-- `Invoice` TransactionType is defined but not mapped in `AccountingJournalsMap`
+- `PayablePayment` TransactionType is now implemented — AP Payment screen (`s2_ap_payment.js`) is complete; remove seq 2 from Purchase mapping
+- `Invoice` TransactionType has no `accountingJournalsMap` entry — configure it via the Modules Setup screen (`modules_registry`)
 
 ---
 
@@ -120,12 +167,17 @@ Sequence 2 will be removed from the Purchase mapping entirely and replaced by th
 
 ---
 
+## GitHub CLI (gh)
+
+`gh` is installed and authenticated as **AtiqDev** (keyring, persistent). Claude can use `gh` for GitHub operations (PRs, issues, releases, etc.) without any login step.
+
+---
+
 ## Session Startup Checklist
 
 When starting a new session, Claude should:
-1. Read this file
-2. Ask the developer what they want to work on today
-3. Do NOT make any code changes until the task is clearly understood
+1. Read this file and wait for user prompt.
+2. Do NOT make any code changes until the task is clearly understood
 
 ## Context Management
 

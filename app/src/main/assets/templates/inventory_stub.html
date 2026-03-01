@@ -1,85 +1,46 @@
 <!-- File: templates/inventory_stub.html -->
-<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
-    <button
-            type="button"
-            class="btn btn-outline-secondary btn-sm btn-icon btn-back me-2"
-            onclick="navigate('dashboard')"
-            aria-label="Back"
-            style="width: 32px; height: 32px; padding: 0;"
-    >
-        <i class="fas fa-arrow-circle-left"></i>
-    </button>
-    <h5 class="screen-title mb-0 flex-grow-1">Inventory Management</h5>
+
+<div class="stub-topbar accent-inventory">
+    <button class="stub-back" onclick="navigate('dashboard')"><i class="fas fa-arrow-left"></i></button>
+    <div class="stub-title">Inventory</div>
+    <div class="ConsoleLog"></div>
 </div>
 
-<div class="screen-body pt-2 bg-info bg-opacity-25">
-    <!-- Accounts & Expense Section -->
-    <h4 class="mb-4">Accounts & Expense</h4>
-    <div class="row g-3 text-center mb-5">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('products')"
-            >
-                <i class="fas fa-tags fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Products</div>
-            </div>
+<div class="stub-body">
+
+    <div class="stub-section-band accent-inventory">Manage</div>
+    <div class="stub-grid">
+
+        <div class="stub-tile accent-inventory" onclick="navigate('products')">
+            <div class="stub-icon icon-inventory"><i class="fas fa-box"></i></div>
+            <div class="stub-label">Products</div>
         </div>
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('stock')"
-            >
-                <i class="fas fa-list-alt fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Stock</div>
-            </div>
+
+        <div class="stub-tile accent-inventory" onclick="navigate('stock')">
+            <div class="stub-icon icon-inventory"><i class="fas fa-warehouse"></i></div>
+            <div class="stub-label">Stock</div>
         </div>
+
+        <div class="stub-tile accent-inventory" onclick="navigate('uoms')">
+            <div class="stub-icon icon-inventory"><i class="fas fa-ruler"></i></div>
+            <div class="stub-label">Units (UOM)</div>
+        </div>
+
+        <div class="stub-tile accent-inventory" onclick="navigate('account')">
+            <div class="stub-icon icon-reports"><i class="fas fa-landmark"></i></div>
+            <div class="stub-label">Accounts</div>
+        </div>
+
+        <div class="stub-tile accent-inventory" onclick="navigate('account_types')">
+            <div class="stub-icon icon-reports"><i class="fas fa-tags"></i></div>
+            <div class="stub-label">Account Types</div>
+        </div>
+
+        <div class="stub-tile accent-inventory" onclick="navigate('transactions')">
+            <div class="stub-icon icon-system"><i class="fas fa-list-alt"></i></div>
+            <div class="stub-label">Transactions</div>
+        </div>
+
     </div>
 
-    <!-- Inventory Actions Section -->
-    <h4 class="mb-4">Inventory Actions</h4>
-    <div class="row g-3 text-center">
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('uoms')"
-            >
-                <i class="fas fa-ruler fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">UOMs</div>
-            </div>
-        </div>
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('account_types')"
-            >
-                <i class="fas fa-cube fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Account Types</div>
-            </div>
-        </div>
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('account')"
-            >
-                <i class="fas fa-warehouse fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Accounts</div>
-            </div>
-        </div>
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-            <div
-                    class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column align-items-center justify-content-center"
-                    role="button"
-                    onclick="navigate('transactions')"
-            >
-                <i class="fas fa-exchange-alt fa-2x text-white bg-info rounded-circle p-2"></i>
-                <div class="mt-2 small text-dark">Transactions</div>
-            </div>
-        </div>
-    </div>
 </div>

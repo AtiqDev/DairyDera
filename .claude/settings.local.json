@@ -3,7 +3,12 @@
     "allow": [
       "Bash(gh auth:*)",
       "Bash(git config:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh:*)",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(powershell:*)"
     ]
   }
 }

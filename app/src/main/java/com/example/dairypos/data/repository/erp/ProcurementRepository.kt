@@ -365,6 +365,124 @@ class ProcurementRepository(private val helper: DatabaseHelper) {
         }
     }
 
+    fun getApPaymentMethods(): String =
+        helper.fetchAll(rdb.rawQuery("SELECT * FROM apPaymentMethods ORDER BY id", null)).toString()
+
+    fun getSuppliersWithOpenBalance(): String {
+        val payablesAcct = helper.getAccountIdByCode("2000")
+        val sql = """
+            SELECT
+              s.id,
+              s.name,
+              COALESCE(created.total, 0) - COALESCE(paid.total, 0) AS openBalance
+            FROM suppliers s
+            LEFT JOIN (
+              SELECT p.supplierId, SUM(je.amount) AS total
+              FROM journalEntries je
+              JOIN accountingTransaction at ON je.referenceId = at.id
+                                           AND at.transactionType = 'Purchase'
+              JOIN purchaseItems pi ON at.transactionId = pi.id
+              JOIN purchases p     ON pi.purchaseId = p.id
+              WHERE je.creditAccountId = ?
+              GROUP BY p.supplierId
+            ) created ON s.id = created.supplierId
+            LEFT JOIN (
+              SELECT pp.supplierId, SUM(je.amount) AS total
+              FROM journalEntries je
+              JOIN accountingTransaction at ON je.referenceId = at.id
+                                           AND at.transactionType = 'PayablePayment'
+              JOIN payablePayment pp ON at.transactionId = pp.id
+              WHERE je.debitAccountId = ?
+              GROUP BY pp.supplierId
+            ) paid ON s.id = paid.supplierId
+            WHERE COALESCE(created.total, 0) - COALESCE(paid.total, 0) > 0
+            ORDER BY s.name
+        """.trimIndent()
+        val args = arrayOf(payablesAcct.toString(), payablesAcct.toString())
+        return helper.fetchAll(rdb.rawQuery(sql, args)).toString()
+    }
+
+    fun getOpenPayables(supplierId: Int): String {
+        val payablesAcct = helper.getAccountIdByCode("2000")
+        val sql = """
+            SELECT
+              COALESCE(created.total, 0) - COALESCE(paid.total, 0) AS openBalance
+            FROM (SELECT 1) dummy
+            LEFT JOIN (
+              SELECT SUM(je.amount) AS total
+              FROM journalEntries je
+              JOIN accountingTransaction at ON je.referenceId = at.id
+                                           AND at.transactionType = 'Purchase'
+              JOIN purchaseItems pi ON at.transactionId = pi.id
+              JOIN purchases p     ON pi.purchaseId = p.id
+              WHERE je.creditAccountId = ?
+                AND p.supplierId = ?
+            ) created ON 1=1
+            LEFT JOIN (
+              SELECT SUM(je.amount) AS total
+              FROM journalEntries je
+              JOIN accountingTransaction at ON je.referenceId = at.id
+                                           AND at.transactionType = 'PayablePayment'
+              JOIN payablePayment pp ON at.transactionId = pp.id
+              WHERE je.debitAccountId = ?
+                AND pp.supplierId = ?
+            ) paid ON 1=1
+        """.trimIndent()
+        val args = arrayOf(
+            payablesAcct.toString(), supplierId.toString(),
+            payablesAcct.toString(), supplierId.toString()
+        )
+        rdb.rawQuery(sql, args).use { c ->
+            val balance = if (c.moveToFirst()) c.getDouble(0) else 0.0
+            return JSONObject().put("openBalance", balance).toString()
+        }
+    }
+
+    fun savePayablePayment(json: String): String {
+        return try {
+            val obj             = JSONObject(json)
+            val supplierId      = obj.getInt("supplierId")
+            val amount          = obj.getDouble("amount")
+            val paymentMethodId = obj.getInt("paymentMethodId")
+            val notes           = obj.optString("notes", "")
+            val date            = obj.optString("paymentDate", helper.nowISoDateOnly())
+
+            // Resolve method name for accounting subType
+            val methodName = rdb.rawQuery(
+                "SELECT name FROM apPaymentMethods WHERE id = ?",
+                arrayOf(paymentMethodId.toString())
+            ).use { c -> if (c.moveToFirst()) c.getString(0) else throw IllegalArgumentException("Unknown paymentMethodId: $paymentMethodId") }
+
+            val cv = ContentValues().apply {
+                put("supplierId",      supplierId)
+                put("paymentDate",     date)
+                put("amount",          amount)
+                put("paymentMethodId", paymentMethodId)
+                put("notes",           notes)
+                put("createDate",      helper.nowIso())
+            }
+            val paymentId = db.insert("payablePayment", null, cv).toInt()
+
+            val input = AccountingTransactionInput(
+                type      = "PayablePayment",
+                subType   = methodName,
+                table     = "payablePayment",
+                refId     = paymentId,
+                refId2    = 0,
+                productId = 0,
+                amount    = amount,
+                date      = date,
+                notes     = notes.ifBlank { null }
+            )
+            helper.insertAccountingTransactionAndPostJournal(input)
+
+            JSONObject().put("id", paymentId).put("isGood", true).toString()
+        } catch (e: Exception) {
+            android.util.Log.e("ERP", "savePayablePayment failed", e)
+            JSONObject().put("error", e.message ?: "Unknown").toString()
+        }
+    }
+
     fun getAveragePurchasedMilkCogs(productId: Int): String {
         val db = rdb
         val invAcct = helper.getAccountIdByCode("1001")

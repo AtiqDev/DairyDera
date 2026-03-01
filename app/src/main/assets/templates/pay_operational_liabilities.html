@@ -1,0 +1,83 @@
+<!-- File: templates/pay_operational_liabilities.html -->
+<style>
+    .pol-container {
+        padding: 1rem;
+        padding-bottom: 80px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .pol-payable-row {
+        cursor: pointer;
+        transition: background-color 0.15s;
+    }
+    .pol-payable-row:active {
+        background-color: #f0f0f0;
+    }
+    .pol-balance {
+        font-size: 1.05rem;
+        font-weight: 600;
+    }
+    .pol-balance.positive { color: #dc3545; }
+    .pol-balance.zero     { color: #6c757d; }
+    .fixed-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 10px 15px;
+        background-color: #ffffff;
+        border-top: 1px solid #dee2e6;
+        box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        z-index: 1000;
+    }
+    .form-control, .form-select {
+        min-height: 48px;
+    }
+</style>
+
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button class="btn btn-outline-secondary btn-sm btn-icon me-2" onclick="navigate('expense_stub')" style="width:32px;height:32px;padding:0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="mb-0 flex-grow-1 ms-2">Pay Operational Liabilities</h5>
+    <div class="ConsoleLog"></div>
+</div>
+
+<div class="pol-container">
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-warning text-dark fw-bold">Outstanding Payables</div>
+        <div class="card-body p-0">
+            <div id="pol-payables-list">
+                <div class="text-center text-muted py-3">Loading…</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3" id="pol-payment-form" style="display:none;">
+        <div class="card-header bg-light fw-bold">
+            Payment — <span id="pol-selected-label"></span>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="pol-amount" class="form-label">Amount <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="pol-amount" step="0.01" min="0.01" placeholder="0.00">
+            </div>
+            <div class="mb-3">
+                <label for="pol-date" class="form-label">Payment Date <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="pol-date">
+            </div>
+            <div class="mb-3">
+                <label for="pol-notes" class="form-label">Notes</label>
+                <textarea class="form-control" id="pol-notes" rows="2" placeholder="Optional reference…"></textarea>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="fixed-footer" id="pol-footer" style="display:none;">
+    <button type="button" class="btn btn-lg btn-warning w-100" id="pol-save-btn" disabled>
+        <i class="fas fa-hand-holding-usd"></i> Save Payment
+    </button>
+</div>
