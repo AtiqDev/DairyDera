@@ -1,0 +1,111 @@
+<style>
+  .hr-group-row { cursor:pointer; transition:background .15s; }
+  .hr-group-row:active { background:#f0f0f0; }
+  .hr-container { padding:1rem; padding-bottom:80px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+</style>
+
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button class="btn btn-outline-secondary btn-sm btn-icon me-2"
+            onclick="navigate('livestock_stub')" style="width:32px;height:32px;padding:0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="mb-0 flex-grow-1 ms-2">Herd Registry</h5>
+    <div class="ConsoleLog"></div>
+</div>
+
+<div class="hr-container">
+
+    <!-- Search -->
+    <div class="input-group mb-3">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text" id="hr-search" class="form-control" placeholder="Search by tag or name…">
+    </div>
+
+    <!-- Groups panel -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <span class="fw-bold">Groups / Pens</span>
+            <button id="hr-add-group-btn" class="btn btn-sm btn-light">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <div id="hr-group-list">
+                <div class="text-center text-muted py-3">Loading…</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Animals panel (shown after group selected) -->
+    <div class="card shadow-sm mb-3" id="hr-animals-panel" style="display:none;">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <span class="fw-bold">Animals</span>
+            <button id="hr-add-animal-btn" class="btn btn-sm btn-success">
+                <i class="fas fa-plus"></i> Add Animal
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tag</th><th>Name</th><th>Gender</th><th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hr-animal-rows"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail card (shown after animal tap) -->
+    <div id="hr-detail-card"></div>
+
+    <!-- Add/Edit Animal form -->
+    <div class="card shadow-sm mb-3" id="hr-animal-form" style="display:none;">
+        <div class="card-header bg-success text-white fw-bold">Animal Details</div>
+        <div class="card-body">
+            <input type="hidden" id="hrf-id">
+            <div class="mb-3">
+                <label class="form-label">Tag Number <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="hrf-tag">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" id="hrf-name">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Breed</label>
+                <input type="text" class="form-control" id="hrf-breed">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Gender <span class="text-danger">*</span></label>
+                <select class="form-select" id="hrf-gender">
+                    <option value="">Select…</option>
+                    <option value="F">Female</option>
+                    <option value="M">Male</option>
+                    <option value="C">Calf</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" class="form-control" id="hrf-dob">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Sire Info (external straw / bull)</label>
+                <input type="text" class="form-control" id="hrf-sire">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" id="hrf-notes" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">
+            <button class="btn btn-success flex-grow-1"
+                    onclick="window.HerdApp._handleAnimalSave()">Save Animal</button>
+            <button class="btn btn-outline-secondary"
+                    onclick="document.getElementById('hr-animal-form').style.display='none'">Cancel</button>
+        </div>
+    </div>
+
+</div>

@@ -174,7 +174,13 @@ const bundledScreens = {
     'operational_entities':true,
     'admin_stub':true,
     'sync':true,
-    'pay_operational_liabilities':true
+    'pay_operational_liabilities':true,
+    'livestock_stub':true,
+    'herd_registry':true,
+    'animal_transactions':true,
+    'animal_health':true,
+    'animal_reproduction':true,
+    'animal_lactation':true
   };
 // Router: when hash changes, pull the right template
 function router() {

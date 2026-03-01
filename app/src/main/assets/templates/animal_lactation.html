@@ -1,0 +1,74 @@
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button class="btn btn-outline-secondary btn-sm btn-icon me-2"
+            onclick="navigate('livestock_stub')" style="width:32px;height:32px;padding:0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="mb-0 flex-grow-1 ms-2">Lactation Management</h5>
+    <div class="ConsoleLog"></div>
+</div>
+
+<!-- Summary strip -->
+<div class="px-3 py-2 border-bottom bg-white">
+    <div id="alt-summary" class="text-muted small">Loading…</div>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs px-3 pt-2 bg-white border-bottom">
+    <li class="nav-item"><button class="nav-link" id="alttab-active">Lactating</button></li>
+    <li class="nav-item"><button class="nav-link" id="alttab-dry">Dry Cows</button></li>
+    <li class="nav-item"><button class="nav-link" id="alttab-manual">Add Manual</button></li>
+</ul>
+
+<div style="padding:1rem;padding-bottom:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+
+<!-- Active Panel -->
+<div id="altpanel-active">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white fw-bold">Currently Lactating</div>
+        <div class="card-body p-0" id="alt-active-list">
+            <div class="text-muted p-3">Loading…</div>
+        </div>
+    </div>
+</div>
+
+<!-- Dry Panel -->
+<div id="altpanel-dry" style="display:none;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white fw-bold">Dry Cows</div>
+        <div class="card-body p-0" id="alt-dry-list">
+            <div class="text-muted p-3">Loading…</div>
+        </div>
+    </div>
+</div>
+
+<!-- Manual Panel -->
+<div id="altpanel-manual" style="display:none;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-dark fw-bold">Manually Add Lactation</div>
+        <div class="card-body">
+            <p class="text-muted small mb-3">
+                Use this to add lactation records for cows that were already milking before
+                this system was set up.
+            </p>
+            <div class="mb-3">
+                <label class="form-label">Female Animal *</label>
+                <select class="form-select" id="altm-animal"></select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Lactation Start Date *</label>
+                <input type="date" class="form-control" id="altm-start">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" id="altm-notes" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-info w-100" id="altm-save-btn">
+                <i class="fas fa-tint"></i> Add Lactation Record
+            </button>
+        </div>
+    </div>
+</div>
+
+</div>

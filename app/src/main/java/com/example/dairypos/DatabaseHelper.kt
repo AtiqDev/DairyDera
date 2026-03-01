@@ -37,6 +37,11 @@ import com.example.dairypos.data.repository.accounting.JournalRepository
 import com.example.dairypos.data.repository.accounting.FinancialReportRepository
 import com.example.dairypos.data.repository.accounting.ModulesRepository
 import com.example.dairypos.data.repository.accounting.OperationalEntitiesRepository
+import com.example.dairypos.data.repository.erp.LiveStockRepository
+import com.example.dairypos.data.repository.erp.AnimalTransactionRepository
+import com.example.dairypos.data.repository.erp.AnimalHealthRepository
+import com.example.dairypos.data.repository.erp.AnimalReproductionRepository
+import com.example.dairypos.data.repository.erp.AnimalLactationRepository
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
@@ -53,10 +58,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
     val financialReport by lazy { FinancialReportRepository(this) }
     val modules by lazy { ModulesRepository(this) }
     val operationalEntities by lazy { OperationalEntitiesRepository(this) }
+    val livestock           by lazy { LiveStockRepository(this) }
+    val animalTxn           by lazy { AnimalTransactionRepository(this) }
+    val animalHealth        by lazy { AnimalHealthRepository(this) }
+    val animalRepro         by lazy { AnimalReproductionRepository(this) }
+    val animalLactation     by lazy { AnimalLactationRepository(this) }
 
     companion object {
         internal const val DB_NAME = "DairyFarmPOS.db"
-        internal const val DB_VERSION = 4
+        internal const val DB_VERSION = 7
 
         internal const val T_CLASSES = "classes"
         internal const val T_CATEGORY = "categories"
@@ -90,6 +100,14 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
         internal const val T_OPERATIONAL_ENTITIES = "operationalEntities"
         internal const val T_MONTHLY_OP_COSTS = "monthlyOperationalCosts"
         internal const val T_DAILY_OP_EXPENSES = "dailyOperationalExpenses"
+
+        internal const val T_ANIMAL_GROUPS         = "animalGroups"
+        internal const val T_ANIMALS               = "animals"
+        internal const val T_ANIMAL_TRANSACTIONS   = "animalTransactions"
+        internal const val T_ANIMAL_HEALTH_EVENTS  = "animalHealthEvents"
+        internal const val T_VACCINATION_SCHEDULES = "vaccinationSchedules"
+        internal const val T_ANIMAL_REPRODUCTION   = "animalReproduction"
+        internal const val T_ANIMAL_LACTATION      = "animalLactation"
 
     }
 
@@ -783,7 +801,171 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
             )
         """.trimIndent(), "SellableProductRates")
 
+        // --- Livestock tables ---
+        safeExec("""
+            CREATE TABLE IF NOT EXISTS $T_ANIMAL_GROUPS (
+                id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                name      TEXT NOT NULL,
+                notes     TEXT,
+                createdAt TEXT DEFAULT (datetime('now'))
+            )
+        """.trimIndent(), T_ANIMAL_GROUPS)
+
+        safeExec("""
+            CREATE TABLE IF NOT EXISTS $T_ANIMALS (
+                id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                tagNumber     TEXT NOT NULL UNIQUE,
+                name          TEXT,
+                breed         TEXT,
+                gender        TEXT NOT NULL CHECK(gender IN ('F','M','C')),
+                dateOfBirth   TEXT,
+                damId         INTEGER REFERENCES $T_ANIMALS(id),
+                sireInfo      TEXT,
+                groupId       INTEGER REFERENCES $T_ANIMAL_GROUPS(id),
+                status        TEXT DEFAULT 'active'
+                                   CHECK(status IN ('active','dry','sick','pregnant','sold','dead')),
+                purchaseDate  TEXT,
+                purchasePrice REAL,
+                bookValue     REAL,
+                notes         TEXT,
+                createdAt     TEXT DEFAULT (datetime('now'))
+            )
+        """.trimIndent(), T_ANIMALS)
+
+        safeExec("""
+            CREATE TABLE IF NOT EXISTS $T_ANIMAL_TRANSACTIONS (
+                id               INTEGER PRIMARY KEY AUTOINCREMENT,
+                animalId         INTEGER NOT NULL REFERENCES $T_ANIMALS(id),
+                txnType          TEXT NOT NULL
+                                     CHECK(txnType IN ('purchase','birth','sale','death','cull','transfer')),
+                date             TEXT NOT NULL,
+                amount           REAL,
+                counterpartyName TEXT,
+                accountingTxnId  INTEGER REFERENCES accountingTransaction(id),
+                notes            TEXT,
+                createdAt        TEXT DEFAULT (datetime('now'))
+            )
+        """.trimIndent(), T_ANIMAL_TRANSACTIONS)
+
+        safeExec("""
+            CREATE TABLE IF NOT EXISTS $T_VACCINATION_SCHEDULES (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                name         TEXT NOT NULL,
+                intervalDays INTEGER,
+                notes        TEXT,
+                createdAt    TEXT DEFAULT (datetime('now'))
+            )
+        """.trimIndent(), T_VACCINATION_SCHEDULES)
+
+        safeExec("""
+            CREATE TABLE IF NOT EXISTS $T_ANIMAL_HEALTH_EVENTS (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                animalId    INTEGER NOT NULL REFERENCES $T_ANIMALS(id),
+                eventType   TEXT NOT NULL
+                                 CHECK(eventType IN ('vaccination','treatment','diagnosis','checkup','other')),
+                date        TEXT NOT NULL,
+                description TEXT NOT NULL,
+                medication  TEXT,
+                dosage      TEXT,
+                vetName     TEXT,
+                cost        REAL,
+                expenseId   INTEGER REFERENCES expenses(id),
+                scheduleId  INTEGER REFERENCES $T_VACCINATION_SCHEDULES(id),
+                nextDueDate TEXT,
+                notes       TEXT,
+                createdAt   TEXT DEFAULT (datetime('now'))
+            )
+        """.trimIndent(), T_ANIMAL_HEALTH_EVENTS)
+
+        safeExec("""
+            CREATE TABLE IF NOT EXISTS $T_ANIMAL_REPRODUCTION (
+                id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+                animalId              INTEGER NOT NULL REFERENCES $T_ANIMALS(id),
+                cycleNumber           INTEGER,
+                heatDate              TEXT,
+                inseminationDate      TEXT,
+                inseminationType      TEXT CHECK(inseminationType IN ('AI','natural')),
+                bullInfo              TEXT,
+                pregnancyCheckDate    TEXT,
+                pregnancyConfirmed    INTEGER,
+                expectedCalvingDate   TEXT,
+                actualCalvingDate     TEXT,
+                calfId                INTEGER REFERENCES $T_ANIMALS(id),
+                calfGender            TEXT,
+                outcome               TEXT DEFAULT 'pending'
+                                           CHECK(outcome IN ('live','stillbirth','abortion','pending')),
+                notes                 TEXT,
+                createdAt             TEXT DEFAULT (datetime('now'))
+            )
+        """.trimIndent(), T_ANIMAL_REPRODUCTION)
+
+        safeExec("""
+            CREATE TABLE IF NOT EXISTS $T_ANIMAL_LACTATION (
+                id               INTEGER PRIMARY KEY AUTOINCREMENT,
+                animalId         INTEGER NOT NULL REFERENCES $T_ANIMALS(id),
+                lactationNumber  INTEGER,
+                startDate        TEXT,
+                dryOffDate       TEXT,
+                status           TEXT DEFAULT 'active'
+                                      CHECK(status IN ('active','dry','complete')),
+                notes            TEXT,
+                createdAt        TEXT DEFAULT (datetime('now'))
+            )
+        """.trimIndent(), T_ANIMAL_LACTATION)
+
         seedDefaults(db)
+
+        // --- Livestock seed data (depends on chartAccounts + transactionTypes from seedDefaults) ---
+        safeExec("INSERT OR IGNORE INTO modulesRegistry (id, name) VALUES (5, 'Livestock')", "seed-ls-module")
+        safeExec("""
+            INSERT OR IGNORE INTO chartAccounts (code, name, isPosting, accountTypeId) VALUES
+              ('1500','Livestock Assets',       1,(SELECT id FROM standardAccountTypes WHERE name='Asset')),
+              ('1501','Livestock Gain on Sale', 1,(SELECT id FROM standardAccountTypes WHERE name='Income')),
+              ('1502','Livestock Loss (Death/Cull)',1,(SELECT id FROM standardAccountTypes WHERE name='Expense'))
+        """.trimIndent(), "seed-ls-coa")
+        safeExec("""
+            INSERT OR IGNORE INTO transactionTypes (name, moduleId) VALUES
+              ('AnimalPurchase', (SELECT id FROM modulesRegistry WHERE name='Livestock')),
+              ('AnimalSale',     (SELECT id FROM modulesRegistry WHERE name='Livestock')),
+              ('AnimalDeath',    (SELECT id FROM modulesRegistry WHERE name='Livestock')),
+              ('AnimalSaleGain', (SELECT id FROM modulesRegistry WHERE name='Livestock')),
+              ('AnimalSaleLoss', (SELECT id FROM modulesRegistry WHERE name='Livestock'))
+        """.trimIndent(), "seed-ls-txntypes")
+        safeExec("""
+            INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+            SELECT tt.id, NULL, 1,
+                (SELECT id FROM chartAccounts WHERE code='1500'),
+                (SELECT id FROM chartAccounts WHERE code='2000')
+            FROM transactionTypes tt WHERE tt.name='AnimalPurchase'
+        """.trimIndent(), "seed-ls-map-purchase")
+        safeExec("""
+            INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+            SELECT tt.id, NULL, 1,
+                (SELECT id FROM chartAccounts WHERE code='1000'),
+                (SELECT id FROM chartAccounts WHERE code='1500')
+            FROM transactionTypes tt WHERE tt.name='AnimalSale'
+        """.trimIndent(), "seed-ls-map-sale")
+        safeExec("""
+            INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+            SELECT tt.id, NULL, 1,
+                (SELECT id FROM chartAccounts WHERE code='1000'),
+                (SELECT id FROM chartAccounts WHERE code='1501')
+            FROM transactionTypes tt WHERE tt.name='AnimalSaleGain'
+        """.trimIndent(), "seed-ls-map-gain")
+        safeExec("""
+            INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+            SELECT tt.id, NULL, 1,
+                (SELECT id FROM chartAccounts WHERE code='1502'),
+                (SELECT id FROM chartAccounts WHERE code='1500')
+            FROM transactionTypes tt WHERE tt.name='AnimalSaleLoss'
+        """.trimIndent(), "seed-ls-map-loss")
+        safeExec("""
+            INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+            SELECT tt.id, NULL, 1,
+                (SELECT id FROM chartAccounts WHERE code='1502'),
+                (SELECT id FROM chartAccounts WHERE code='1500')
+            FROM transactionTypes tt WHERE tt.name='AnimalDeath'
+        """.trimIndent(), "seed-ls-map-death")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -963,6 +1145,191 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null
                   ((SELECT id FROM transactionTypes WHERE name='PayableSettlement'), 'Fuel',
                    (SELECT id FROM chartAccounts WHERE code='2004'), (SELECT id FROM chartAccounts WHERE code='1000'), 1)
             """.trimIndent())
+            return
+        }
+        if (oldVersion < 5) {
+            // --- Livestock tables ---
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS $T_ANIMAL_GROUPS (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    notes TEXT,
+                    createdAt TEXT DEFAULT (datetime('now'))
+                )
+            """.trimIndent())
+
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS $T_ANIMALS (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    tagNumber TEXT NOT NULL UNIQUE,
+                    name TEXT,
+                    breed TEXT,
+                    gender TEXT NOT NULL CHECK(gender IN ('F','M','C')),
+                    dateOfBirth TEXT,
+                    damId INTEGER REFERENCES $T_ANIMALS(id),
+                    sireInfo TEXT,
+                    groupId INTEGER REFERENCES $T_ANIMAL_GROUPS(id),
+                    status TEXT DEFAULT 'active'
+                        CHECK(status IN ('active','dry','sick','pregnant','sold','dead')),
+                    purchaseDate TEXT,
+                    purchasePrice REAL,
+                    bookValue REAL,
+                    notes TEXT,
+                    createdAt TEXT DEFAULT (datetime('now'))
+                )
+            """.trimIndent())
+
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS $T_ANIMAL_TRANSACTIONS (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    animalId INTEGER NOT NULL REFERENCES $T_ANIMALS(id),
+                    txnType TEXT NOT NULL
+                        CHECK(txnType IN ('purchase','birth','sale','death','cull','transfer')),
+                    date TEXT NOT NULL,
+                    amount REAL,
+                    counterpartyName TEXT,
+                    accountingTxnId INTEGER REFERENCES accountingTransaction(id),
+                    notes TEXT,
+                    createdAt TEXT DEFAULT (datetime('now'))
+                )
+            """.trimIndent())
+
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS $T_VACCINATION_SCHEDULES (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    intervalDays INTEGER,
+                    notes TEXT,
+                    createdAt TEXT DEFAULT (datetime('now'))
+                )
+            """.trimIndent())
+
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS $T_ANIMAL_HEALTH_EVENTS (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    animalId INTEGER NOT NULL REFERENCES $T_ANIMALS(id),
+                    eventType TEXT NOT NULL
+                        CHECK(eventType IN ('vaccination','treatment','diagnosis','checkup','other')),
+                    date TEXT NOT NULL,
+                    description TEXT NOT NULL,
+                    medication TEXT,
+                    dosage TEXT,
+                    vetName TEXT,
+                    cost REAL,
+                    expenseId INTEGER REFERENCES expenses(id),
+                    scheduleId INTEGER REFERENCES $T_VACCINATION_SCHEDULES(id),
+                    nextDueDate TEXT,
+                    notes TEXT,
+                    createdAt TEXT DEFAULT (datetime('now'))
+                )
+            """.trimIndent())
+
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS $T_ANIMAL_REPRODUCTION (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    animalId INTEGER NOT NULL REFERENCES $T_ANIMALS(id),
+                    cycleNumber INTEGER,
+                    heatDate TEXT,
+                    inseminationDate TEXT,
+                    inseminationType TEXT CHECK(inseminationType IN ('AI','natural')),
+                    bullInfo TEXT,
+                    pregnancyCheckDate TEXT,
+                    pregnancyConfirmed INTEGER,
+                    expectedCalvingDate TEXT,
+                    actualCalvingDate TEXT,
+                    calfId INTEGER REFERENCES $T_ANIMALS(id),
+                    calfGender TEXT,
+                    outcome TEXT DEFAULT 'pending'
+                        CHECK(outcome IN ('live','stillbirth','abortion','pending')),
+                    notes TEXT,
+                    createdAt TEXT DEFAULT (datetime('now'))
+                )
+            """.trimIndent())
+
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS $T_ANIMAL_LACTATION (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    animalId INTEGER NOT NULL REFERENCES $T_ANIMALS(id),
+                    lactationNumber INTEGER,
+                    startDate TEXT,
+                    dryOffDate TEXT,
+                    status TEXT DEFAULT 'active'
+                        CHECK(status IN ('active','dry','complete')),
+                    notes TEXT,
+                    createdAt TEXT DEFAULT (datetime('now'))
+                )
+            """.trimIndent())
+
+            // --- modulesRegistry row ---
+            db.execSQL("INSERT OR IGNORE INTO modulesRegistry (id, name) VALUES (5, 'Livestock')")
+
+            // --- COA accounts ---
+            db.execSQL("INSERT OR IGNORE INTO chartAccounts (code, name, isPosting, accountTypeId) SELECT '1500','Livestock Assets',1,id FROM standardAccountTypes WHERE name='Asset'")
+            db.execSQL("INSERT OR IGNORE INTO chartAccounts (code, name, isPosting, accountTypeId) SELECT '1501','Livestock Gain on Sale',1,id FROM standardAccountTypes WHERE name='Income'")
+            db.execSQL("INSERT OR IGNORE INTO chartAccounts (code, name, isPosting, accountTypeId) SELECT '1502','Livestock Loss (Death/Cull)',1,id FROM standardAccountTypes WHERE name='Expense'")
+
+            // --- TransactionTypes ---
+            db.execSQL("INSERT OR IGNORE INTO transactionTypes (name, moduleId) VALUES ('AnimalPurchase', (SELECT id FROM modulesRegistry WHERE name='Livestock'))")
+            db.execSQL("INSERT OR IGNORE INTO transactionTypes (name, moduleId) VALUES ('AnimalSale',     (SELECT id FROM modulesRegistry WHERE name='Livestock'))")
+            db.execSQL("INSERT OR IGNORE INTO transactionTypes (name, moduleId) VALUES ('AnimalDeath',    (SELECT id FROM modulesRegistry WHERE name='Livestock'))")
+            // no return — fall through to v6 block so journal mappings are applied
+        }
+        if (oldVersion < 6) {
+            // --- Additional livestock TransactionTypes for gain/loss on sale ---
+            db.execSQL("INSERT OR IGNORE INTO transactionTypes (name, moduleId) VALUES ('AnimalSaleGain', 5)")
+            db.execSQL("INSERT OR IGNORE INTO transactionTypes (name, moduleId) VALUES ('AnimalSaleLoss', 5)")
+
+            // --- accountingJournalsMap for all livestock transaction types ---
+            // AnimalPurchase: Dr Livestock Assets (1500) / Cr Payables (2000)
+            db.execSQL("""
+                INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+                SELECT tt.id, NULL, 1,
+                    (SELECT id FROM chartAccounts WHERE code='1500'),
+                    (SELECT id FROM chartAccounts WHERE code='2000')
+                FROM transactionTypes tt WHERE tt.name='AnimalPurchase'
+            """.trimIndent())
+
+            // AnimalSale: Dr Cash (1000) / Cr Livestock Assets (1500) — for book value portion
+            db.execSQL("""
+                INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+                SELECT tt.id, NULL, 1,
+                    (SELECT id FROM chartAccounts WHERE code='1000'),
+                    (SELECT id FROM chartAccounts WHERE code='1500')
+                FROM transactionTypes tt WHERE tt.name='AnimalSale'
+            """.trimIndent())
+
+            // AnimalSaleGain: Dr Cash (1000) / Cr Livestock Gain on Sale (1501)
+            db.execSQL("""
+                INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+                SELECT tt.id, NULL, 1,
+                    (SELECT id FROM chartAccounts WHERE code='1000'),
+                    (SELECT id FROM chartAccounts WHERE code='1501')
+                FROM transactionTypes tt WHERE tt.name='AnimalSaleGain'
+            """.trimIndent())
+
+            // AnimalSaleLoss: Dr Livestock Loss (1502) / Cr Livestock Assets (1500)
+            db.execSQL("""
+                INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+                SELECT tt.id, NULL, 1,
+                    (SELECT id FROM chartAccounts WHERE code='1502'),
+                    (SELECT id FROM chartAccounts WHERE code='1500')
+                FROM transactionTypes tt WHERE tt.name='AnimalSaleLoss'
+            """.trimIndent())
+
+            // AnimalDeath: Dr Livestock Loss (1502) / Cr Livestock Assets (1500)
+            db.execSQL("""
+                INSERT OR IGNORE INTO accountingJournalsMap (transactionTypeId, subType, sequence, debitAccountId, creditAccountId)
+                SELECT tt.id, NULL, 1,
+                    (SELECT id FROM chartAccounts WHERE code='1502'),
+                    (SELECT id FROM chartAccounts WHERE code='1500')
+                FROM transactionTypes tt WHERE tt.name='AnimalDeath'
+            """.trimIndent())
+
+            return
+        }
+        if (oldVersion < 7) {
+            // v7: livestock tables + seeds now live in onCreate(). For devices upgrading
+            // from v6, all livestock data is already in place via v5+v6 blocks — nothing to do.
             return
         }
         db.execSQL("DROP TABLE IF EXISTS ErrorLog")

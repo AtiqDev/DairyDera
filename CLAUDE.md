@@ -167,6 +167,12 @@ Methods: `getModules()`, `getModuleDetail(moduleId)`, `getMappingsForTxnType(txn
 
 ---
 
+## GitHub CLI (gh)
+
+`gh` is installed and authenticated as **AtiqDev** (keyring, persistent). Claude can use `gh` for GitHub operations (PRs, issues, releases, etc.) without any login step.
+
+---
+
 ## Session Startup Checklist
 
 When starting a new session, Claude should:

@@ -1,0 +1,85 @@
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button class="btn btn-outline-secondary btn-sm btn-icon me-2"
+            onclick="navigate('livestock_stub')" style="width:32px;height:32px;padding:0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="mb-0 flex-grow-1 ms-2">Reproduction &amp; Calving</h5>
+    <div class="ConsoleLog"></div>
+</div>
+
+<!-- Upcoming Calvings -->
+<div id="ar-upcoming-calvings" class="mx-3 mt-3" style="display:none;">
+    <div class="card border-success shadow-sm">
+        <div class="card-header bg-success text-white fw-bold">
+            <i class="fas fa-baby"></i> Upcoming Calvings
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead class="table-light">
+                    <tr><th>Animal</th><th>Expected Date</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Calving form container (shown from upcoming calvings) -->
+<div id="ar-calving-form-container" class="mx-3 mt-2" style="display:none;"></div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs px-3 pt-2 bg-white border-bottom mt-3">
+    <li class="nav-item"><button class="nav-link" id="artab-active">Active Cycles</button></li>
+    <li class="nav-item"><button class="nav-link" id="artab-new-cycle">New Cycle</button></li>
+    <li class="nav-item"><button class="nav-link" id="artab-history">History</button></li>
+</ul>
+
+<div style="padding:1rem;padding-bottom:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+
+<!-- Active Cycles Panel -->
+<div id="arpanel-active">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light fw-bold">Open Cycles</div>
+        <div class="card-body p-0" id="ar-active-list">
+            <div class="text-muted p-3">Loading…</div>
+        </div>
+    </div>
+</div>
+
+<!-- New Cycle Panel -->
+<div id="arpanel-new-cycle" style="display:none;">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-dark fw-bold">Start New Cycle (Heat Detection)</div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Female Animal *</label>
+                <select class="form-select" id="ar-animal-sel"></select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Heat Date *</label>
+                <input type="date" class="form-control" id="ar-heat-date">
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-info w-100" id="ar-start-cycle-btn">
+                Start Cycle
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- History Panel -->
+<div id="arpanel-history" style="display:none;">
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Select Animal</label>
+        <select class="form-select" id="arh-animal-sel"></select>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-header bg-light fw-bold">Reproduction History</div>
+        <div class="card-body p-0" id="arh-history">
+            <div class="text-muted p-3">Select an animal above.</div>
+        </div>
+    </div>
+</div>
+
+</div>

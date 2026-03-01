@@ -1,0 +1,51 @@
+<div class="stub-topbar accent-daily">
+    <button class="stub-back" onclick="navigate('dashboard')"><i class="fas fa-arrow-left"></i></button>
+    <div class="stub-title">Livestock</div>
+    <div class="ConsoleLog"></div>
+</div>
+
+<div class="stub-body">
+
+    <!-- Herd summary strip -->
+    <div class="stub-stock-card mb-3">
+        <div id="ls-summary" class="px-3 py-2">
+            <span class="text-muted small">Loading herd summary…</span>
+        </div>
+    </div>
+
+    <div class="stub-section-band accent-daily">Herd</div>
+    <div class="stub-grid">
+
+        <div class="stub-tile accent-daily" onclick="navigate('herd_registry')">
+            <div class="stub-icon icon-daily"><i class="fas fa-cow"></i></div>
+            <div class="stub-label">Animals</div>
+        </div>
+
+        <div class="stub-tile accent-daily" onclick="navigate('animal_transactions')">
+            <div class="stub-icon icon-purchase"><i class="fas fa-exchange-alt"></i></div>
+            <div class="stub-label">Transactions</div>
+        </div>
+
+    </div>
+
+    <div class="stub-section-band accent-expense">Care</div>
+    <div class="stub-grid">
+
+        <div class="stub-tile accent-expense" onclick="navigate('animal_health')">
+            <div class="stub-icon icon-expense"><i class="fas fa-heartbeat"></i></div>
+            <div class="stub-label">Health &amp; Vet</div>
+        </div>
+
+        <div class="stub-tile accent-expense" onclick="navigate('animal_reproduction')">
+            <div class="stub-icon icon-expense"><i class="fas fa-baby"></i></div>
+            <div class="stub-label">Reproduction</div>
+        </div>
+
+        <div class="stub-tile accent-reports" onclick="navigate('animal_lactation')">
+            <div class="stub-icon icon-reports"><i class="fas fa-tint"></i></div>
+            <div class="stub-label">Lactation</div>
+        </div>
+
+    </div>
+
+</div>

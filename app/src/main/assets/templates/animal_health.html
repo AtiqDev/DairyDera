@@ -1,0 +1,136 @@
+<div class="screen-topbar bg-light border-bottom d-flex align-items-center px-3 py-2">
+    <button class="btn btn-outline-secondary btn-sm btn-icon me-2"
+            onclick="navigate('livestock_stub')" style="width:32px;height:32px;padding:0;">
+        <i class="fas fa-arrow-circle-left"></i>
+    </button>
+    <h5 class="mb-0 flex-grow-1 ms-2">Health &amp; Veterinary</h5>
+    <div class="ConsoleLog"></div>
+</div>
+
+<!-- Overdue alerts banner -->
+<div id="ah-overdue-banner" style="display:none;padding:0 1rem;"></div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs px-3 pt-2 bg-white border-bottom">
+    <li class="nav-item"><button class="nav-link" id="ahtab-log">Per-Animal Log</button></li>
+    <li class="nav-item"><button class="nav-link" id="ahtab-schedules">Schedules</button></li>
+</ul>
+
+<div style="padding:1rem;padding-bottom:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+
+<!-- Log Panel -->
+<div id="ahpanel-log">
+    <!-- Animal selector -->
+    <div class="mb-3">
+        <label class="form-label fw-semibold">Select Animal</label>
+        <select class="form-select" id="ah-animal-sel">
+            <option value="">Loading…</option>
+        </select>
+    </div>
+
+    <!-- History table -->
+    <div class="card shadow-sm mb-3" id="ah-log-panel" style="display:none;">
+        <div class="card-header bg-light fw-bold">Health History</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th><th>Type</th><th>Description</th>
+                            <th>Medication</th><th>Vet</th><th>Cost</th><th>Next Due</th><th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="ah-event-rows"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add event form -->
+    <div class="card shadow-sm mb-3" id="ah-add-event-panel" style="display:none;">
+        <div class="card-header bg-success text-white fw-bold">Add Health Event</div>
+        <div class="card-body">
+            <input type="hidden" id="ahf-animal-id">
+            <div class="mb-3">
+                <label class="form-label">Event Type *</label>
+                <select class="form-select" id="ahf-type">
+                    <option value="">Select…</option>
+                    <option value="vaccination">Vaccination</option>
+                    <option value="treatment">Treatment</option>
+                    <option value="diagnosis">Diagnosis</option>
+                    <option value="checkup">Checkup</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Vaccination Schedule (optional)</label>
+                <select class="form-select" id="ahf-schedule">
+                    <option value="">None (manual)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Date *</label>
+                <input type="date" class="form-control" id="ahf-date">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description *</label>
+                <input type="text" class="form-control" id="ahf-desc" placeholder="What was done?">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Medication</label>
+                <input type="text" class="form-control" id="ahf-medication">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Dosage</label>
+                <input type="text" class="form-control" id="ahf-dosage">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Vet Name</label>
+                <input type="text" class="form-control" id="ahf-vet">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Cost (Rs)</label>
+                <input type="number" class="form-control" id="ahf-cost" step="0.01" min="0">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea class="form-control" id="ahf-notes" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-success w-100" id="ahf-save-btn">
+                <i class="fas fa-heartbeat"></i> Save Health Event
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Schedules Panel -->
+<div id="ahpanel-schedules" style="display:none;">
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-info text-dark fw-bold">Vaccination Schedules</div>
+        <div class="card-body p-0">
+            <div id="ahs-list">
+                <div class="text-muted p-3">Loading…</div>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow-sm mb-3">
+        <div class="card-header bg-light fw-bold">Add Schedule</div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Vaccine / Schedule Name *</label>
+                <input type="text" class="form-control" id="ahs-name" placeholder="e.g. FMD Vaccine">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Interval (days) — leave blank for one-time</label>
+                <input type="number" class="form-control" id="ahs-days" min="1">
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-info w-100" id="ahs-save-btn">Add Schedule</button>
+        </div>
+    </div>
+</div>
+
+</div>
