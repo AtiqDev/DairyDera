@@ -48,6 +48,7 @@ class JournalRepository(private val helper: DatabaseHelper) {
                 put("creditAccountId", obj.getInt("creditAccountId"))
                 put("amount", obj.getDouble("amount"))
                 put("description", obj.optString("description", ""))
+                put("updatedOn", System.currentTimeMillis())
             }
 
             val db = this.db
@@ -116,6 +117,7 @@ class JournalRepository(private val helper: DatabaseHelper) {
                 put("uomId", uomId)
                 put("transactionDate", txnDate)
                 put("notes", notes ?: "")
+                put("updatedOn", System.currentTimeMillis())
             }
 
             transactionId = db.insert(DatabaseHelper.T_TRANSACTIONS, null, cv).toInt()
@@ -144,6 +146,7 @@ class JournalRepository(private val helper: DatabaseHelper) {
                 if (input.unitPrice != null) put("unitPrice", input.unitPrice)
                 if (input.date != null) put("transactionDate", input.date)
                 put("notes", input.notes)
+                put("updatedOn", System.currentTimeMillis())
             }
             val newTxnId = db.insertOrThrow("accountingTransaction", null, values)
 
@@ -244,6 +247,7 @@ class JournalRepository(private val helper: DatabaseHelper) {
                     put("creditAccountId", creditAccId)
                     put("amount", amount)
                     put("description", desc)
+                    put("updatedOn", System.currentTimeMillis())
                 }
 
                 val journalId = db.insert("journalEntries", null, cv)

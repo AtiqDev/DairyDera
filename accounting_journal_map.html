@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DairyPOS — Accounting Journal Map</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; color: #222; }
+
+    header {
+      background: linear-gradient(135deg, #1a3a5c, #2d6a9f);
+      color: white; padding: 28px 32px;
+    }
+    header h1 { font-size: 1.7rem; font-weight: 700; }
+    header p  { margin-top: 6px; opacity: 0.85; font-size: 0.92rem; }
+
+    .pipeline-box {
+      background: #0f2d48; color: #a8d4f5;
+      font-family: monospace; font-size: 0.82rem;
+      padding: 16px 24px; border-left: 4px solid #2d9cdb;
+      margin: 24px 32px;
+      border-radius: 4px;
+      white-space: pre;
+      line-height: 1.7;
+    }
+
+    .module-section { margin: 0 24px 32px; }
+    .module-header {
+      display: flex; align-items: center; gap: 10px;
+      background: #1a3a5c; color: white;
+      padding: 10px 18px; border-radius: 8px 8px 0 0;
+      font-weight: 600; font-size: 1rem;
+    }
+    .module-header .badge {
+      background: rgba(255,255,255,0.15);
+      padding: 2px 10px; border-radius: 12px;
+      font-size: 0.75rem; font-weight: 400;
+    }
+    .branches-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0; border: 1px solid #dde2ea;
+      border-top: none; border-radius: 0 0 8px 8px;
+      background: white; overflow: hidden;
+    }
+    @media(max-width: 760px) { .branches-grid { grid-template-columns: 1fr; } }
+    .branch-card {
+      padding: 16px 18px; border-right: 1px solid #eee; border-bottom: 1px solid #eee;
+    }
+    .branch-card:nth-child(even) { border-right: none; }
+
+    .branch-title {
+      font-weight: 700; font-size: 0.95rem;
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 10px;
+    }
+    .status-pill {
+      display: inline-block; padding: 2px 9px;
+      border-radius: 10px; font-size: 0.7rem; font-weight: 600;
+    }
+    .pill-ok       { background: #d1f0dc; color: #1a6b3a; }
+    .pill-critical { background: #fde0e0; color: #b91c1c; }
+    .pill-deferred { background: #fef3c7; color: #92400e; }
+    .pill-partial  { background: #e0eaff; color: #1d4ed8; }
+    .pill-doc      { background: #f0f0f0; color: #555; }
+
+    .trigger {
+      font-size: 0.78rem; color: #555; margin-bottom: 10px;
+      font-style: italic;
+    }
+    .trigger code {
+      font-style: normal; background: #f0f4f8; padding: 1px 5px;
+      border-radius: 3px; font-size: 0.77rem; color: #1a3a5c;
+    }
+
+    table.je { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    table.je th {
+      background: #f0f4f8; text-align: left;
+      padding: 4px 8px; font-weight: 600; color: #444;
+      border-bottom: 1px solid #dde2ea;
+    }
+    table.je td { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; }
+    table.je tr:last-child td { border-bottom: none; }
+    .dr-cell { color: #155e2e; font-weight: 600; }
+    .cr-cell { color: #1e40af; font-weight: 600; }
+    .seq-cell { color: #888; font-size: 0.75rem; }
+
+    .gap-box {
+      border-radius: 6px; padding: 12px 14px; margin-top: 12px;
+      font-size: 0.82rem; line-height: 1.5;
+    }
+    .gap-critical { background: #fff0f0; border-left: 3px solid #ef4444; }
+    .gap-warning  { background: #fffbea; border-left: 3px solid #f59e0b; }
+    .gap-info     { background: #eff6ff; border-left: 3px solid #3b82f6; }
+
+    .gap-box strong { display: block; margin-bottom: 4px; }
+    .gap-box code {
+      background: rgba(0,0,0,0.05); padding: 1px 5px;
+      border-radius: 3px; font-size: 0.78rem;
+    }
+
+    /* Summary table */
+    .summary-section { margin: 0 24px 40px; }
+    .summary-section h2 {
+      color: #1a3a5c; font-size: 1.1rem; margin-bottom: 12px;
+      padding-bottom: 6px; border-bottom: 2px solid #2d6a9f;
+    }
+    table.summary {
+      width: 100%; border-collapse: collapse; background: white;
+      border-radius: 8px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      font-size: 0.85rem;
+    }
+    table.summary th {
+      background: #1a3a5c; color: white;
+      padding: 10px 14px; text-align: left;
+    }
+    table.summary td { padding: 9px 14px; border-bottom: 1px solid #eee; }
+    table.summary tr:last-child td { border-bottom: none; }
+    table.summary tr:hover td { background: #f7faff; }
+    .prio-high { color: #b91c1c; font-weight: 700; }
+    .prio-med  { color: #92400e; font-weight: 700; }
+    .prio-low  { color: #166534; font-weight: 700; }
+
+    .coa-section { margin: 0 24px 40px; }
+    .coa-section h2 {
+      color: #1a3a5c; font-size: 1.1rem; margin-bottom: 12px;
+      padding-bottom: 6px; border-bottom: 2px solid #2d6a9f;
+    }
+    .coa-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+      gap: 8px;
+    }
+    .coa-item {
+      background: white; padding: 8px 12px;
+      border-radius: 6px; border: 1px solid #dde2ea;
+      font-size: 0.82rem;
+    }
+    .coa-code { font-weight: 700; color: #1a3a5c; }
+    .coa-type { font-size: 0.72rem; color: #888; margin-top: 2px; }
+
+    footer {
+      text-align: center; padding: 20px;
+      font-size: 0.78rem; color: #999;
+      border-top: 1px solid #e0e0e0; margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>DairyPOS — Accounting Journal Map</h1>
+  <p>Every transaction branch, its bookkeeping entries, code trigger, and wiring status. Generated 2026-03-01.</p>
+</header>
+
+<div class="pipeline-box">Journal Entry Pipeline:
+
+  Operational Event  →  AccountingTransactionInput(type, subType, table, refId, amount)
+    → helper.insertAccountingTransactionAndPostJournal()
+        → INSERT into accountingTransaction
+        → JournalRepository.postJournalEntries(transactionId)
+            → SELECT from accountingJournalsMap WHERE transactionType + subType match
+            → For each rule (ORDER BY sequence):
+                → calculateAmount(txn, creditAccId)
+                → if amount > 0  →  INSERT Dr/Cr pair into journalEntries</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PROCUREMENT MODULE                                       -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="module-section">
+  <div class="module-header">
+    PROCUREMENT MODULE
+    <span class="badge">Suppliers &amp; AP</span>
+  </div>
+  <div class="branches-grid">
+
+    <!-- Branch 1: Purchase -->
+    <div class="branch-card">
+      <div class="branch-title">
+        Purchase — Goods Received
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>ProcurementRepository.savePurchase()</code></div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>Condition</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="seq-cell">1</td><td>subType = Consumable</td>
+            <td class="dr-cell">1001 Inventory</td>
+            <td class="cr-cell">2000 Payables</td>
+          </tr>
+          <tr>
+            <td class="seq-cell">1</td><td>subType = Raw</td>
+            <td class="dr-cell">1010 Inv: Purchased Milk</td>
+            <td class="cr-cell">2000 Payables</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="gap-box gap-info" style="margin-top:10px;">
+        <strong>Note</strong>
+        Supplier liability (account 2000) grows with each purchase. No per-invoice AP tracking — AP is managed as a running balance on the account.
+      </div>
+    </div>
+
+    <!-- Branch 2: PayablePayment -->
+    <div class="branch-card">
+      <div class="branch-title">
+        PayablePayment — Pay Supplier
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>ProcurementRepository.savePayablePayment()</code><br>
+        Screen: AP Payment (s2_ap_payment.js)</div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>Condition</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="seq-cell">1</td><td>subType = Cash</td>
+            <td class="dr-cell">2000 Payables</td>
+            <td class="cr-cell">1000 Cash</td>
+          </tr>
+          <tr>
+            <td class="seq-cell">1</td><td>subType = Bank</td>
+            <td class="dr-cell">2000 Payables</td>
+            <td class="cr-cell">1003 Bank</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="gap-box gap-info" style="margin-top:10px;">
+        <strong>Good: Cash vs Bank routing is wired</strong>
+        Payment method (Cash / Bank) determines which credit account fires. This is one of the most complete branches in the system.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- SALES MODULE                                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="module-section">
+  <div class="module-header">
+    SALES MODULE
+    <span class="badge">AR, Revenue &amp; Customer Payments</span>
+  </div>
+  <div class="branches-grid">
+
+    <!-- Branch 5: Sale -->
+    <div class="branch-card">
+      <div class="branch-title">
+        Sale — Milk Sold to Customer (Revenue Recognition)
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>SalesRepository.recordSale()</code><br>
+        Side effects: auto-creates monthly invoice, links sale rows to <code>invoiceSaleItems</code></div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>Condition</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="seq-cell">1</td><td>subType = Product</td>
+            <td class="dr-cell">1002 Accounts Receivable</td>
+            <td class="cr-cell">4000 Milk Sales</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="gap-box gap-info" style="margin-top:10px;">
+        <strong>What this does</strong>
+        Every daily sale creates an AR entry (money customer owes you) and recognises Milk Sales revenue. The invoice document tracks the monthly total but has no separate journal entry of its own.
+      </div>
+    </div>
+
+    <!-- Branch 6: BatchSoldCogs -->
+    <div class="branch-card">
+      <div class="branch-title">
+        BatchSoldCogs — COGS Recognition
+        <span class="status-pill pill-deferred">DEFERRED</span>
+      </div>
+      <div class="trigger">Trigger: <strong>NONE — no code calls this yet</strong></div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>Condition</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="seq-cell">2</td><td>subType = NULL</td>
+            <td class="dr-cell">5001 COGS</td>
+            <td class="cr-cell">1010 Inv: Purchased Milk</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="gap-box gap-warning" style="margin-top:10px;">
+        <strong>Gap: COGS never recognised</strong>
+        The journal rule exists in <code>accountingJournalsMap</code> but no code fires it. Milk inventory (account 1010) never decreases when milk is sold. Cost of Goods Sold is never posted to the P&amp;L. Gross profit is overstated. This is a deliberate deferral — batch settlement logic needs to be built first.
+      </div>
+    </div>
+
+    <!-- Branch 7: ReceivePayment — CRITICAL -->
+    <div class="branch-card" style="grid-column: 1 / -1;">
+      <div class="branch-title">
+        ReceivePayment — Customer Pays Their Invoice (AR Clearance)
+        <span class="status-pill pill-critical">CRITICAL GAP</span>
+      </div>
+      <div class="trigger">
+        UI: <code>receive_payment.html</code> / <code>s6_receive_payment.js</code>
+        → <code>nativeApi.call('receivePayment', {customerId, amount})</code>
+        → <code>MainActivity.kt</code> → <code>CustomerRepository.receiveCustomerPayment()</code>
+      </div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>Condition</th><th>Debit (Dr)</th><th>Credit (Cr)</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="seq-cell">1</td>
+            <td>subType = NULL (cash assumed)</td>
+            <td class="dr-cell">1000 Cash</td>
+            <td class="cr-cell">1002 Accounts Receivable</td>
+            <td><span class="status-pill pill-critical" style="font-size:0.7rem;">NEVER POSTS</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="gap-box gap-critical" style="margin-top:12px;">
+        <strong>What happens today (broken)</strong>
+        <code>receiveCustomerPayment()</code> correctly inserts a <code>paymentReceived</code> row and creates <code>paymentApplied</code> rows against open invoices.
+        It marks invoices as "Paid" in the invoice table. But it <strong>never calls</strong>
+        <code>insertAccountingTransactionAndPostJournal()</code>.
+        <br><br>
+        Result: account 1002 (Accounts Receivable) in <code>journalEntries</code> is <strong>never credited</strong>. Cash received is <strong>never debited</strong> to account 1000. The balance sheet shows AR growing forever and cash never increasing from customer payments.
+      </div>
+
+      <div class="gap-box gap-warning" style="margin-top:8px;">
+        <strong>Missing: Cash vs Bank routing</strong>
+        The current journal rule has <code>subType = NULL</code>, meaning it always debits 1000 Cash. If the customer pays by bank transfer, the debit should go to 1003 Bank instead. A <code>paymentMethod</code> parameter needs to flow from the UI through to a <code>ReceivePayment/Bank</code> journal rule (Dr 1003, Cr 1002).
+      </div>
+
+      <div class="gap-box gap-info" style="margin-top:8px;">
+        <strong>Where to add the fix</strong>
+        In <code>CustomerRepository.receiveCustomerPayment()</code>, after inserting the <code>paymentReceived</code> row, add:<br>
+        <code>helper.insertAccountingTransactionAndPostJournal( AccountingTransactionInput(type="ReceivePayment", subType=null, table="paymentReceived", refId=newPaymentId, amount=amount) )</code>
+      </div>
+    </div>
+
+    <!-- Invoice: Document-only -->
+    <div class="branch-card">
+      <div class="branch-title">
+        Invoice — Monthly Customer Invoice Document
+        <span class="status-pill pill-doc">DOC ONLY</span>
+      </div>
+      <div class="trigger">Auto-created inside <code>recordSale()</code> — not a separate user action</div>
+      <div style="font-size:0.82rem; color:#555; line-height:1.6; margin-top:6px;">
+        No journal entries. The <code>Invoice</code> TransactionType exists in the DB but has <code>moduleId = NULL</code> and no <code>accountingJournalsMap</code> entry.
+        <br><br>
+        The invoice is purely a <strong>document</strong> — it groups all daily sales for a customer into a monthly billing statement. Revenue was already recognised by the <code>Sale</code> TxnType when each daily sale was recorded. Invoice status (Draft → Open → Paid) is updated automatically as payments are applied.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PRODUCTION MODULE                                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="module-section">
+  <div class="module-header">
+    PRODUCTION MODULE
+    <span class="badge">WIP, Feed, Mix &amp; Cost Capitalisation</span>
+  </div>
+  <div class="branches-grid">
+
+    <!-- Branch 3: FeedUse -->
+    <div class="branch-card">
+      <div class="branch-title">
+        FeedUse — Inventory Consumed into WIP
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: stock consumption flow</div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>Condition</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="seq-cell">1</td><td>NULL</td>
+            <td class="dr-cell">1015 Production WIP</td>
+            <td class="cr-cell">1001 Inventory</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Branch 4: Mix -->
+    <div class="branch-card">
+      <div class="branch-title">
+        Mix — WIP Transferred to Purchased Milk Pool
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>ProductionRepository.saveMixMilk()</code></div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>Condition</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="seq-cell">1</td><td>NULL</td>
+            <td class="dr-cell">1010 Inv: Purchased Milk</td>
+            <td class="cr-cell">1015 Production WIP</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Branch 8: Expense accrual -->
+    <div class="branch-card">
+      <div class="branch-title">
+        Expense — Daily Operational Accrual
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>processOperationalCostExpenses()</code> → called from <code>saveMilkProduction()</code> daily</div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>subType</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr><td class="seq-cell">1</td><td>Wages</td><td class="dr-cell">6000 Labor Expense</td><td class="cr-cell">2002 Labor Payable</td></tr>
+          <tr><td class="seq-cell">1</td><td>Rent</td><td class="dr-cell">6001 Rent Expense</td><td class="cr-cell">2001 Accrued Rent Payable</td></tr>
+          <tr><td class="seq-cell">1</td><td>Electricity</td><td class="dr-cell">7000 Electricity Expense</td><td class="cr-cell">2003 Accrued Elec. Payable</td></tr>
+          <tr><td class="seq-cell">1</td><td>Fuel</td><td class="dr-cell">8000 Fuel Expense</td><td class="cr-cell">2004 Accrued Fuel Payable</td></tr>
+        </tbody>
+      </table>
+      <div class="gap-box gap-info" style="margin-top:10px;">
+        <strong>Note: Vet not in daily accrual</strong>
+        Vet costs are captured only through WIP capitalisation (ProductionExpense/Vet below). There is no <code>Expense/Vet</code> daily accrual path.
+      </div>
+    </div>
+
+    <!-- Branch 9: ProductionExpense / WIP capitalization -->
+    <div class="branch-card">
+      <div class="branch-title">
+        ProductionExpense — WIP Cost Capitalisation
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>wipCapitalization()</code> → called from <code>saveMilkProduction()</code><br>
+        Reads <code>New</code> journal entries for ProductionExpense rules, marks them <code>Expensed</code></div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>subType</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr><td class="seq-cell">12</td><td>Wages</td><td class="dr-cell">1015 WIP</td><td class="cr-cell">6000 Labor Expense</td></tr>
+          <tr><td class="seq-cell">13</td><td>Fuel</td><td class="dr-cell">1015 WIP</td><td class="cr-cell">8000 Fuel Expense</td></tr>
+          <tr><td class="seq-cell">14</td><td>Electricity</td><td class="dr-cell">1015 WIP</td><td class="cr-cell">7000 Electricity Expense</td></tr>
+          <tr><td class="seq-cell">15</td><td>Rent</td><td class="dr-cell">1015 WIP</td><td class="cr-cell">6001 Rent Expense</td></tr>
+          <tr><td class="seq-cell">15</td><td>Vet</td><td class="dr-cell">1015 WIP</td><td class="cr-cell">7001 Vet Expense</td></tr>
+        </tbody>
+      </table>
+      <div class="gap-box gap-info" style="margin-top:10px;">
+        <strong>Sequence numbers 12–15 are intentional</strong>
+        These run after the Expense accrual entries (seq 1). The high sequence numbers ensure WIP capitalisation entries process after the expense accrual has already posted.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- EXPENSES MODULE                                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="module-section">
+  <div class="module-header">
+    EXPENSES MODULE
+    <span class="badge">Operational Payable Settlement</span>
+  </div>
+  <div class="branches-grid">
+
+    <!-- Branch 10: PayableSettlement -->
+    <div class="branch-card" style="grid-column: 1 / -1;">
+      <div class="branch-title">
+        PayableSettlement — Pay Operational Liabilities (Wages, Rent, etc.)
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>ExpenseRepository.saveOperationalPayment()</code><br>
+        Screen: <code>pay_operational_liabilities</code> (Expenses → Pay Liabilities)</div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>subType</th><th>Debit (Dr) — clears payable</th><th>Credit (Cr) — cash out</th></tr></thead>
+        <tbody>
+          <tr><td class="seq-cell">1</td><td>Wages</td><td class="dr-cell">2002 Labor Payable</td><td class="cr-cell">1000 Cash</td></tr>
+          <tr><td class="seq-cell">1</td><td>Rent</td><td class="dr-cell">2001 Accrued Rent Payable</td><td class="cr-cell">1000 Cash</td></tr>
+          <tr><td class="seq-cell">1</td><td>Electricity</td><td class="dr-cell">2003 Accrued Elec. Payable</td><td class="cr-cell">1000 Cash</td></tr>
+          <tr><td class="seq-cell">1</td><td>Fuel</td><td class="dr-cell">2004 Accrued Fuel Payable</td><td class="cr-cell">1000 Cash</td></tr>
+        </tbody>
+      </table>
+      <div class="gap-box gap-warning" style="margin-top:10px;">
+        <strong>Gap: Bank payments not supported</strong>
+        All settlements assume Cash (Cr 1000). If wages or rent are paid by bank transfer, no corresponding <code>PayableSettlement/*/Bank</code> rule exists to credit account 1003 Bank instead.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- LIVESTOCK MODULE                                         -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="module-section">
+  <div class="module-header">
+    LIVESTOCK MODULE
+    <span class="badge">Herd Assets, Sales &amp; Losses</span>
+  </div>
+  <div class="branches-grid">
+
+    <!-- AnimalPurchase -->
+    <div class="branch-card">
+      <div class="branch-title">
+        AnimalPurchase — Buy an Animal
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>AnimalTransactionRepository.saveAnimalTransaction()</code></div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>Condition</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr><td class="seq-cell">1</td><td>NULL</td><td class="dr-cell">1500 Livestock Assets</td><td class="cr-cell">2000 Payables</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AnimalSale -->
+    <div class="branch-card">
+      <div class="branch-title">
+        AnimalSale + Gain/Loss — Sell an Animal
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>AnimalTransactionRepository.saveAnimalSale()</code><br>
+        Three TxnTypes fire conditionally based on sale price vs book value</div>
+      <table class="je">
+        <thead><tr><th>TxnType</th><th>Fires when</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>AnimalSale</td><td>Always</td>
+            <td class="dr-cell">1000 Cash</td>
+            <td class="cr-cell">1500 Livestock Assets (book value portion)</td>
+          </tr>
+          <tr>
+            <td>AnimalSaleGain</td><td>Sale &gt; Book value</td>
+            <td class="dr-cell">1000 Cash</td>
+            <td class="cr-cell">1501 Livestock Gain on Sale</td>
+          </tr>
+          <tr>
+            <td>AnimalSaleLoss</td><td>Sale &lt; Book value</td>
+            <td class="dr-cell">1502 Livestock Loss</td>
+            <td class="cr-cell">1500 Livestock Assets</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- AnimalDeath -->
+    <div class="branch-card">
+      <div class="branch-title">
+        AnimalDeath — Animal Died
+        <span class="status-pill pill-ok">WIRED</span>
+      </div>
+      <div class="trigger">Trigger: <code>AnimalTransactionRepository.saveAnimalDeath()</code></div>
+      <table class="je">
+        <thead><tr><th>Seq</th><th>Condition</th><th>Debit (Dr)</th><th>Credit (Cr)</th></tr></thead>
+        <tbody>
+          <tr><td class="seq-cell">1</td><td>NULL</td><td class="dr-cell">1502 Livestock Loss</td><td class="cr-cell">1500 Livestock Assets</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- GAP SUMMARY                                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="summary-section">
+  <h2>Gap Summary — What Needs to Be Fixed</h2>
+  <table class="summary">
+    <thead>
+      <tr>
+        <th>Priority</th>
+        <th>Gap</th>
+        <th>Symptom on Books</th>
+        <th>Fix Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="prio-high">CRITICAL</td>
+        <td>ReceivePayment journal never posts. <code>receiveCustomerPayment()</code> does payment tracking but never calls <code>insertAccountingTransactionAndPostJournal()</code>.</td>
+        <td>AR (1002) never decreases. Cash (1000) never increases from customer payments. Balance sheet AR grows forever.</td>
+        <td>Add <code>insertAccountingTransactionAndPostJournal()</code> call inside <code>CustomerRepository.receiveCustomerPayment()</code> after the paymentReceived insert.</td>
+      </tr>
+      <tr>
+        <td class="prio-high">HIGH</td>
+        <td>ReceivePayment has no Cash vs Bank subType routing. Current rule always debits 1000 Cash.</td>
+        <td>Bank transfers from customers will incorrectly increase Cash instead of Bank.</td>
+        <td>Add a <code>paymentMethod</code> param to the receive payment UI and backend. Add <code>ReceivePayment/Bank</code> rule (Dr 1003, Cr 1002) to <code>accountingJournalsMap</code>.</td>
+      </tr>
+      <tr>
+        <td class="prio-med">MEDIUM</td>
+        <td>BatchSoldCogs never fires. COGS (5001) and Inventory (1010) are never adjusted at point of sale.</td>
+        <td>Milk inventory (1010) stays high permanently. COGS is always zero. Gross profit is massively overstated.</td>
+        <td>Build batch settlement logic. Call <code>insertAccountingTransactionAndPostJournal(type="BatchSoldCogs")</code> when a batch is settled/closed.</td>
+      </tr>
+      <tr>
+        <td class="prio-med">MEDIUM</td>
+        <td>PayableSettlement has no Bank option — all operational payable settlements assume Cash only.</td>
+        <td>Bank transfers for wages/rent will incorrectly reduce Cash (1000) instead of Bank (1003).</td>
+        <td>Add <code>PayableSettlement/{Wages|Rent|Electricity|Fuel}/Bank</code> rules (Dr payable, Cr 1003) and a payment method selector in the settlement screen.</td>
+      </tr>
+      <tr>
+        <td class="prio-low">LOW</td>
+        <td>No <code>Expense/Vet</code> daily accrual. Vet costs only flow through WIP capitalisation.</td>
+        <td>Vet costs are capitalised to WIP but never first accrued to a payable. Only matters if vet bills are owed before payment.</td>
+        <td>Add <code>Expense/Vet → Dr 7001, Cr (new) Vet Payable</code> rule if accrual accounting for vet bills is needed.</td>
+      </tr>
+      <tr>
+        <td class="prio-low">LOW</td>
+        <td>AccountingLogic.md incorrectly lists both 7000 and 7001 as "Vet Expense" (stale doc).</td>
+        <td>No effect on actual data — DB seed is correct (7000 = Electricity, 7001 = Vet).</td>
+        <td>Update AccountingLogic.md COA table. The code is already correct.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- CHART OF ACCOUNTS                                        -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="coa-section">
+  <h2>Chart of Accounts Reference</h2>
+  <div class="coa-grid">
+    <div class="coa-item"><span class="coa-code">1000</span> Cash<div class="coa-type">Asset</div></div>
+    <div class="coa-item"><span class="coa-code">1001</span> Inventory<div class="coa-type">Asset</div></div>
+    <div class="coa-item"><span class="coa-code">1002</span> Accounts Receivable<div class="coa-type">Asset</div></div>
+    <div class="coa-item"><span class="coa-code">1003</span> Bank<div class="coa-type">Asset</div></div>
+    <div class="coa-item"><span class="coa-code">1010</span> Inv: Purchased Milk<div class="coa-type">Asset</div></div>
+    <div class="coa-item"><span class="coa-code">1012</span> WIP Inventory<div class="coa-type">Asset (non-posting)</div></div>
+    <div class="coa-item"><span class="coa-code">1015</span> Inv: Production WIP<div class="coa-type">Asset</div></div>
+    <div class="coa-item"><span class="coa-code">1500</span> Livestock Assets<div class="coa-type">Asset</div></div>
+    <div class="coa-item"><span class="coa-code">2000</span> Payables (AP — Suppliers)<div class="coa-type">Liability</div></div>
+    <div class="coa-item"><span class="coa-code">2001</span> Accrued Rent Payable<div class="coa-type">Liability</div></div>
+    <div class="coa-item"><span class="coa-code">2002</span> Labor Payable<div class="coa-type">Liability</div></div>
+    <div class="coa-item"><span class="coa-code">2003</span> Accrued Electricity Payable<div class="coa-type">Liability</div></div>
+    <div class="coa-item"><span class="coa-code">2004</span> Accrued Fuel Payable<div class="coa-type">Liability</div></div>
+    <div class="coa-item"><span class="coa-code">4000</span> Milk Sales<div class="coa-type">Income</div></div>
+    <div class="coa-item"><span class="coa-code">1501</span> Livestock Gain on Sale<div class="coa-type">Income</div></div>
+    <div class="coa-item"><span class="coa-code">5001</span> COGS<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">5002</span> COGS: Purchased Milk<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">5003</span> COGS: Produced Milk<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">5004</span> Production Overhead<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">6000</span> Labor Expense<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">6001</span> Rent Expense<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">6002</span> Utility Expense<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">7000</span> Electricity Expense<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">7001</span> Vet Expense<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">8000</span> Fuel Expense<div class="coa-type">Expense</div></div>
+    <div class="coa-item"><span class="coa-code">1502</span> Livestock Loss (Death/Cull)<div class="coa-type">Expense</div></div>
+  </div>
+</div>
+
+<footer>
+  DairyPOS — accounting_journal_map.html &nbsp;|&nbsp; Generated 2026-03-01 &nbsp;|&nbsp; DB_VERSION = 1
+</footer>
+
+</body>
+</html>

@@ -8,7 +8,23 @@
       "Bash(gh:*)",
       "Bash(python3:*)",
       "Bash(python:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(grep:*)",
+      "Bash(ls -la /c/Users/atiqw/AndroidStudioProjects/MyPos5/app/src/main/java/com/example/dairypos/data/repository/erp/*.kt)",
+      "Bash(xargs -I {} basename {})",
+      "Bash(ls -la /c/Users/atiqw/AndroidStudioProjects/MyPos5/app/src/main/java/com/example/dairypos/data/repository/accounting/*.kt)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(export:*)",
+      "Bash(ls:*)",
+      "Bash(\"D:\\\\Code\\\\mysql-enterprise-9.6.0_winx64_bundle\\\\mysql-commercial-9.6.0-winx64\\\\bin\\\\mysqladmin.exe\":*)",
+      "Bash(\"/d/Code/mysql-enterprise-9.6.0_winx64_bundle/mysql-commercial-9.6.0-winx64/bin/mysql.exe\":*)",
+      "Bash(npm install:*)",
+      "Bash(ssh:*)",
+      "Bash(rsync:*)",
+      "Bash(curl:*)",
+      "Bash(__NEW_LINE_bef451158e7c8b4a__ curl:*)",
+      "Bash(nslookup:*)",
+      "Bash(scp:*)"
     ]
   }
 }

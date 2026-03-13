@@ -26,8 +26,22 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="notes" class="form-label">notes (Optional)</label>
-                    <textarea id="notes" class="form-control" rows="2" placeholder="Cash, Bank transfer, etc."></textarea>
+                    <label class="form-label">Payment Method</label>
+                    <div class="d-flex gap-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="pmCash" value="Cash" checked>
+                            <label class="form-check-label" for="pmCash">Cash</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="pmBank" value="Bank">
+                            <label class="form-check-label" for="pmBank">Bank</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="notes" class="form-label">Notes (Optional)</label>
+                    <textarea id="notes" class="form-control" rows="2" placeholder="Reference number, etc."></textarea>
                 </div>
             </div>
         </div>

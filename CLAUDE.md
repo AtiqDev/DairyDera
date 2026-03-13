@@ -80,6 +80,22 @@ Each domain area has its own repository class in `data.repository.erp`.
 
 ---
 
+## Database Versioning Policy
+
+DB_VERSION is permanently fixed at **1**. There is no `onUpgrade` migration chain.
+
+**Rules:**
+- Never increment DB_VERSION.
+- Never add `onUpgrade` migration blocks.
+- All schema changes are expressed as modifications to `INSERT` statements in `onCreate()` and `seedDefaults()`.
+- `onUpgrade()` only performs a full wipe + recreate (development reset only).
+- No `UPDATE` statements in `seedDefaults()` — all data must be correct on initial `INSERT`.
+- To rename a COA account, fix its name in the `INSERT INTO chartAccounts` block.
+- To reassign a TransactionType module, fix its `moduleId` in the `INSERT INTO TransactionTypes` block.
+- To change a journal mapping, fix the `debitAccountId`/`creditAccountId` in the `INSERT INTO accountingJournalsMap` block.
+
+---
+
 ## Accounting System Architecture
 
 ### How Journal Entries Work

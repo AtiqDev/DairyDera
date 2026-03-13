@@ -137,10 +137,12 @@ window.screenMap.receive_payment = {
             this.setProcessing(true);
 
             try {
+                const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'Cash';
               const resRaw = await nativeApi.call('receivePayment', {
                 customerId: this.customerId,
                 amount: amount,
-                notes: this.refs.notesIn.value.trim()
+                notes: this.refs.notesIn.value.trim(),
+                paymentMethod: paymentMethod
               });
               const res = typeof resRaw === 'string' ? JSON.parse(resRaw) : resRaw;
               if (res.success) {

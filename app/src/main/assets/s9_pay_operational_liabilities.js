@@ -111,12 +111,14 @@ window.screenMap['pay_operational_liabilities'] = {
         saveBtn.disabled = true;
         saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving…';
 
+        const paymentMethod = document.querySelector('input[name="polPaymentMethod"]:checked')?.value || 'Cash';
         const DB = window.screenMap['pay_operational_liabilities'].script.DataBridge;
         const res = await DB.saveOperationalPayment({
           subType: this.selectedSubType,
           amount,
           paymentDate: date,
-          notes
+          notes,
+          paymentMethod
         });
 
         if (res && res.id) {
